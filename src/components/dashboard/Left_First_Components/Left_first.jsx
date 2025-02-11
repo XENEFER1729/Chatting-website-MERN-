@@ -1,0 +1,46 @@
+import React from 'react'
+import {
+    Settings,
+    Lock,
+    Archive,
+    MessageSquare,
+    Phone,
+    Circle,
+} from 'lucide-react';
+
+export default function Left_first({ActivationIcon,setActivationIcon}) {
+
+    return (
+        <div className="flex h-screen ">
+            {/* Left Icons Bar */}
+            <div className="w-16 bg-gray-900 flex flex-col items-center py-6 space-y-6">
+                {/* {console.log(ActivationIcon)} */}
+                <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon==='chats'?'text-green-500':""}`} 
+                onClick={()=>setActivationIcon("chats")} >
+                    <MessageSquare size={24} />
+                </button>
+                <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon==="calls"?"text-green-500":""} `}
+                onClick={()=>setActivationIcon("calls")}>
+                    <Phone size={24} />
+                </button>
+                <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon==="chatbot"?"text-green-500":""} `}
+                onClick={()=>setActivationIcon("chatbot")}>
+                    <Circle size={24} className="text-blue-500" />
+                </button>
+                <div className="flex-grow" />
+                <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon==="archived"?"text-green-500":""} `}
+                onClick={()=>setActivationIcon("archived")}>
+                    <Archive size={24} />
+                </button>
+                <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon==="locked chats"?"text-green-500":""} `}
+                onClick={()=>setActivationIcon("locaked chats")}>
+                    <Lock size={24} />
+                </button>
+                <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon==="settings"?"text-green-500":""} `}
+                onClick={()=>setActivationIcon("settings")}>
+                    <Settings size={24} />
+                </button>
+            </div>
+        </div>
+    );
+}
