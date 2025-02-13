@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-export default function Contact({ Fullname, Email, Openchat }) {
+export default function Contact({ Fullname, Email}) {
   const [rFullname, setrFullname] = useState(Fullname || "Loading...");
+  const [rLastMessage,setLastMessage]=useState("");
+  const [rAvatar,setrAvatar]=useState("");
 
   // Save receiver's details in localStorage
   useEffect(() => {
@@ -25,6 +27,7 @@ export default function Contact({ Fullname, Email, Openchat }) {
         for (const user of data) {
           if (user?.user?.email === Email) {
             setrFullname(user.user.Fullname);
+            setrAvatar(user.user.avatar)
             break;
           }
         }
@@ -33,12 +36,37 @@ export default function Contact({ Fullname, Email, Openchat }) {
         setrFullname("Name not found");
       }
     };
+    const getlastMessage = async () => {
+      try {
+        const response = await fetch("http://localhost:9000/api/getConversations", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        const a = localStorage.getItem("Email")
+        for (let i in data) {
+          console.log("hi",data[i].members)
+          const b=data[i].members
+          if(b.includes(localStorage.getItem("Email")) && b.includes(localStorage.getItem("receiver_Email") )){
+            setLastMessage(data[i].LastMessage)
+          }
+        }
+      } catch (error) {
+        setLastMessage("no message");
+      }
+    };
+    if(!rLastMessage){
+      getlastMessage()
+    }
 
     // Only fetch if Fullname is not provided
     if (!Fullname) {
       getfullname();
     }
-  }, [Fullname, Email]);
+  }, [Fullname, Email,rLastMessage,rAvatar]);
+
 
   return (
     <div onClick={() => {
@@ -49,13 +77,14 @@ export default function Contact({ Fullname, Email, Openchat }) {
       <div>
         <img
           className="rounded-full h-12"
-          src="https://universemagazine.com/wp-content/uploads/2022/08/zm4nfgq29yi91-1536x1536-1.jpg"
+          src={`${rAvatar}`}
           alt="Profile"
         />
       </div>
       <div className='flex flex-col text-start' >
         <p className="font-serif text-[20px]">{rFullname}</p>
-        <p className="font-normal">{Email}</p>
+        {/* <p className="font-normal">{Email}</p> */}
+        <p className="font-normal">{rLastMessage}</p>
       </div>
     </div>
   );

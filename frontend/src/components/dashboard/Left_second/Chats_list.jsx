@@ -1,10 +1,9 @@
 import React, { useState,useRef,useEffect } from 'react'
-import Contact_single from '../Contact_single'
 import Contact from '../Contact'
 import { Pencil } from 'lucide-react'
 import SearchBar from '../SearchBar'
 
-export default function Chats_list({ Contacts, openChat, handleAvatar, Avatar }) {
+export default function Chats_list({ Contacts, openChat, setAvatar }) {
     const [NewChat, setNewChat] = useState(false);
     const componentRef = useRef(null);
 
@@ -40,7 +39,7 @@ export default function Chats_list({ Contacts, openChat, handleAvatar, Avatar })
                                 <SearchBar  />
                             </div>
                         }
-                    </div>
+                    </div> 
                 </div>
             </div>
 
@@ -48,7 +47,7 @@ export default function Chats_list({ Contacts, openChat, handleAvatar, Avatar })
                 <h3 >Contacts and Groups</h3>
                 {Object.entries(Contacts).map(([key, email]) => (
                     <p key={key} onClick={openChat}>
-                        <Contact Email={email} ></Contact>
+                        <Contact Email={email} setAvatar={setAvatar} ></Contact>
                     </p>
                 ))}
                 

@@ -32,10 +32,6 @@ export default function Dashboard_main() {
   const [msg, setMsg] = useState('');
   const [messages, setMessages] = useState([]);
 
-  //avatar
-  const [Avatar, setAvatar] = useState("");
-  const [Avatars, setAvatars] = useState([]);
-
   // Fetch all users and listen to messages
   useEffect(() => {
     const fetchUsers = async () => {
@@ -70,20 +66,7 @@ export default function Dashboard_main() {
     setMsg('');
 
   };
-  const handleAvatar = (e) => {
-    const ava = e.target.files[0];
-    try {
-      const ava2 = URL.createObjectURL(ava);
-      // console.log(ava)
-      setAvatar(ava2);
-      setAvatars((prevItems) => [...prevItems, ava2])
-      console.log(Avatars)
-    } catch (error) {
-      console.log(error)
-    }
-    console.log("handle avatar");
-    // setAvatar("https://imgs.search.brave.com/GHQkBlu8Dy9-gL8XpPnU2YECbiRcpK-k8MnY2HJFDzw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvODE4/MDIxMTgvcGhvdG8v/Y2xvc2V1cC1vZi1p/bWctZm91bmRlci1h/bmQtY2VvLW1hcmst/bWNjb3JtYWNrLWxp/Z29uaWVyLXBhLTgt/MTQtMTk2NS5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9YUNj/ZExpNjE4b19qSjNC/WjN4VTZyZGN6T25n/NmxmVXZHZlhIUVRx/RC1YST0")
-  }
+
   useEffect(() => {
     const fetchdata = async () => {
       const Contact = {}
@@ -121,8 +104,7 @@ export default function Dashboard_main() {
     <div className="w-screen h-screen flex  ">
       <Left_first setActivationIcon={setActivationIcon} ActivationIcon={ActivationIcon} />
       {ActivationIcon === "chats" && <Chats_list Contacts={Contacts} 
-        openChat={openChat} handleAvatar={handleAvatar}
-        Avatar={Avatar} />}
+        openChat={openChat}/>}
 
       {/* Main Chat Area */}
       {ActivationIcon === "chats" && <Chatting_board sendMessage={sendMessage}

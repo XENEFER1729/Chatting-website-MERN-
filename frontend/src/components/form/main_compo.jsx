@@ -44,30 +44,31 @@ const MainCompo = () => {
       const result = await response.json();
       console.log(result);
 
-      localStorage.setItem("Email", formData.email);
+      if (result.message === "Username already taken" || result.message === "User already exists") {
+        throw new Error(result.message);
+        setErrorMessage(result.message)
+      } else {
+        localStorage.setItem("Email", formData.email);
 
-      const nameFetch = await fetch("http://localhost:9000/api/allusers", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        const nameFetch = await fetch("http://localhost:9000/api/allusers", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (!nameFetch.ok) {
-        throw new Error("Failed to fetch user data");
+        const users = await nameFetch.json();
+        // console.log(users)
+
+        users.forEach((element) => {
+          if (element["user"]["email"] === formData.email) {
+            localStorage.setItem("Fullname", element["user"]["Fullname"]);
+            localStorage.setItem("Username", element["user"]["Username"]);
+          }
+        });
+
+        navigate("/chat");
       }
-
-      const users = await nameFetch.json();
-      // console.log(users)
-
-      users.forEach((element) => {
-        if (element["user"]["email"] === formData.email) {
-          localStorage.setItem("Fullname", element["user"]["Fullname"]);
-          localStorage.setItem("Username", element["user"]["Username"]);
-        }
-      });
-
-      navigate("/chat");
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -80,9 +81,9 @@ const MainCompo = () => {
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
     }} >
-        <div className='h-screen w-full bg-gradient-to-r from-gray-950 to-gray-800/60 p-16 flex justify-around '>
+      <div className='h-screen w-full bg-gradient-to-r from-gray-950 to-gray-800/60  flex justify-around items-center '>
 
-        <div className="w-full max-w-md space-y-8 bg-gray-800 p-8 rounded-xl">
+        <div className="w-full max-w-md space-y-8 h-fit bg-gray-800 p-8 rounded-xl">
           {/* Logo and Header */}
           <div className="flex items-center space-x-2 mb-8">
             <div className="w-8 h-8 bg-blue-500 rounded-full"></div>

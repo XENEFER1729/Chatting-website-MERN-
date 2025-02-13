@@ -21,7 +21,6 @@ const Users = require("./models/Users");
 const Roomids = require("./models/Roomids")
 const Conversation = require("./models/Conversation");
 const Message = require("./models/Messages")
-const Avatar=require("./models/Avatar")
 
 // Middleware
 app.use(express.json());
@@ -41,10 +40,14 @@ app.post("/api/register", async (req, res) => {
       return res.status(400).send("Please fill all required fields");
     }
 
-    const isAlreadyExists = await Users.findOne({ email });
+
+    const isAlreadyExists = await Users.findOne({ email});
     const isAlreadyExistsUsername = await Users.findOne({ Username });
     if (isAlreadyExists) {
-      return res.status(409).send("User already exists");
+      return res.status(201).json({message :"User already exists"});
+    }
+    if (isAlreadyExistsUsername) {
+      return res.status(201).json({message:"Username already taken"});
     }
 
     const hashedPassword = await bcryptjs.hash(password, 10);
@@ -63,17 +66,17 @@ app.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).send("Please fill all required fields");
+      return res.status(201).json({message:"Please fill all required fields"});
     }
 
     const isAlreadyExists = await Users.findOne({ email });
     if (!isAlreadyExists) {
-      return res.status(401).send("Invalid credentials");
+      return res.status(201).json({message:"Email not found"});
     }
 
     const validateUser = await bcryptjs.compare(password, isAlreadyExists.password);
     if (!validateUser) {
-      return res.status(401).send("Invalid credentials");
+      return res.status(201).json({message:"Invalid Password"});
     }
 
     const jwtSecretKey = process.env.JWT_SECRET_KEY || "this_is_a_jwt_secrete_key";
@@ -104,7 +107,7 @@ app.get("/api/allusers", async (req, res) => {
   try {
     const users = await Users.find();
     const usersData = await Promise.all(users.map(async (user) => {
-      return { user: { email: user.email, Username: user.Username, Fullname: user.Fullname }, userid: user.userid };
+      return { user: { email: user.email, Username: user.Username, Fullname: user.Fullname,avatar:user.avatar }, userid: user.userid };
     }));
     res.status(200).json(usersData);
   } catch (error) {
@@ -169,30 +172,48 @@ app.post("/api/getmessage", async (req, res) => {
   const { senderid, receiverid } = req.body;
   const message = await Message.find({
     $or: [
-      { senderid: senderid, receiverid: receiverid }, 
+      { senderid: senderid, receiverid: receiverid },
       { senderid: receiverid, receiverid: senderid }
     ]
   }).sort({ timestamp: 1 });
   // console.log(message)
-  res.status(201).json(message) 
+  res.status(201).json(message)
 })
 
-app.post("/api/setAvatar",async(req,res)=>{
-  const {email,avatar}=req.body;
-    
-  const avatarnew=new Avatar({email,avatar})
-  await avatarnew.save()
-  res.status(201).json(avatarnew);
-}) 
-app.post("/api/getAvatar",async(req,res)=>{
-  const {email}=req.body;  
-  const avatarnew=await Avatar.find({
-    email:email
-  })
-  res.status(201).json(avatarnew);
-}) 
- 
- 
+app.put("/api/setAvatar", async (req, res) => {
+  const { email, avatarnew } = req.body;
+  try {
+    const avatarUpdate = await Users.updateOne(
+      { email: email },
+      { $set: { avatar: avatarnew } }
+    );
+    // console.log(avatarUpdate);
+    res.status(200).json({
+      message: "Avatar updated successfully",
+      email: email, 
+      newAvatar: avatarnew
+    });
+  } catch (error) {
+    console.error("Error updating avatar:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+app.post("/api/getAvatar", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const avatarnew = await Users.find({
+      email: email
+    })
+    res.status(201).json(avatarnew);
+  }catch(error){
+    console.log("User not found")
+    res.status(201).json({message:"user not found"})
+  }
+})
+
+
 // Socket.io connection  
 const users_sockets = {}
 io.on("connection", (socket) => {

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    const [ErrorMessage, setErrorMessage] = useState()
+    const [ErrorMessage, setErrorMessage] = useState("")
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -13,6 +13,7 @@ const Login = () => {
     const [rememberMe, setRememberMe] = useState(false);
 
     const handleInputChange = (e) => {
+        setErrorMessage("")
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -33,37 +34,40 @@ const Login = () => {
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to register");
-            }
-
             const result = await response.json();
             console.log(result);
-
-            localStorage.setItem("Email", formData.email);
-
-            const nameFetch = await fetch("http://localhost:9000/api/allusers", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!nameFetch.ok) {
-                throw new Error("Failed to fetch user data");
+            if (result.message === "Email not found") {
+                setErrorMessage("Email not found")
             }
+            if (result.message === "Invalid Password") {
+                setErrorMessage("Invalid Password")
+            }
+            if (result.message != "Email not found" && result.message != "Invalid Password") {
+                localStorage.setItem("Email", formData.email);
 
-            const users = await nameFetch.json();
-            // console.log(users)
+                const nameFetch = await fetch("http://localhost:9000/api/allusers", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
 
-            users.forEach((element) => {
-                if (element["user"]["email"] === formData.email) {
-                    localStorage.setItem("Fullname", element["user"]["Fullname"]);
-                    localStorage.setItem("Username", element["user"]["Username"]);
+                if (!nameFetch.ok) {
+                    throw new Error("Failed to fetch user data");
                 }
-            });
 
-            navigate("/chat");
+                const users = await nameFetch.json();
+                // console.log(users)
+
+                users.forEach((element) => {
+                    if (element["user"]["email"] === formData.email) {
+                        localStorage.setItem("Fullname", element["user"]["Fullname"]);
+                        localStorage.setItem("Username", element["user"]["Username"]);
+                    }
+                });
+
+                navigate("/chat");
+            }
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -102,6 +106,9 @@ const Login = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className='text-red-500 text-center'>
+                                {ErrorMessage}
+                            </div>
                             {/* Email Field */}
                             <div className="space-y-1">
                                 <label htmlFor="email" className="text-sm text-gray-300">Email address</label>
@@ -202,7 +209,7 @@ const Login = () => {
                     }}>
                 </div> */}
                 <div className='flex items-center justify-center'>
-                    
+
                     <div className='w-fit h-fit bg-black rounded-lg p-3'>
 
                         <div class="text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center"

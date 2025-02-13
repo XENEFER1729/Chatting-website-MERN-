@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Bell, Moon, Volume2, Shield, Lock, User, Globe, Palette, Camera, Mail, Phone, Edit2, Check, X, CloudFog } from 'lucide-react';
+import { Bell, Moon, Volume2, Shield, Lock, User, Globe, Palette, Camera, Mail, Edit2, Check, X } from 'lucide-react';
 import { useRef } from 'react';
 import CustomSelect from './CustomSelect';
 import CustomButton from './CustomButton';
@@ -45,7 +45,7 @@ const Settings_main = () => {
         username: localStorage.getItem("Username"),
         email: localStorage.getItem("Email"),
         bio: 'Software developer & tech enthusiast',
-        avatar: '/api/placeholder/150/150'
+        avatar: ''
     });
 
     const [isEditing, setIsEditing] = useState(false);
@@ -64,59 +64,62 @@ const Settings_main = () => {
         }));
     };
 
-    const handleProfileChange =async (e) => {
+    const handleProfileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                console.log(reader.result)
+                // console.log(reader.result)
                 setProfile({ avatar: reader.result });
+                setAvatar(reader.result)
             };
+            // console.log(reader.result)
             reader.readAsDataURL(file);
         }
-        console.log(profile)
-        setprofile()
-        // const setAvatar=await fetch("http://localhost:9000/api/setAvatar",{
-        //     method:"POST",
-        //     headers:{
-        //         "Content-Type":"application/json"
-        //     },
-        //     body:JSON.stringify({"email":localStorage.getItem("Email"),
-        //         avatar:profile.avatar
-        //     })
-        // })
-        // const a=await setAvatar.json()
+        // console.log(profile)
+        const setAvatar=async (avatarNew)=>{
+            // console.log(avatarNew)
+            const setAvatar = await fetch("http://localhost:9000/api/setAvatar", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "email": localStorage.getItem("Email"),
+                    avatarnew: avatarNew
+                })
+            })
+            // const a = await setAvatar.json()
+            // console.log(a) 
+        }
+        setTimeout(()=>{
+            setprofile()
+        },500)
     };
     const handleCameraClick = () => {
         fileInputRef.current.click();
     };
     const fileInputRef = useRef(null);
-    const setprofile=()=>{
+    const setprofile = async () => {
+        const getavatar = await fetch("http://localhost:9000/api/getAvatar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ "email": localStorage.getItem("Email") })
+        })
+        const data = await getavatar.json()
         setProfile({
             name: localStorage.getItem("Fullname"),
             username: localStorage.getItem("Username"),
             email: localStorage.getItem("Email"),
             bio: 'Software developer & tech enthusiast',
-            avatar: ''
+            avatar: data[0].avatar
         });
     }
-    useEffect(()=>{
+    useEffect(() => {
         setprofile()
-        // const settingAvatar=async()=>{
-        //     const setAvatar=await fetch("http://localhost:9000/api/setAvatar",{
-        //         method:"POST",
-        //         headers:{
-        //             "Content-Type":"application/json"
-        //         },
-        //         body:JSON.stringify({
-        //             email:profile.email
-        //         })
-        //     })
-        //     const a=await setAvatar.json()
-        //     console.log(a)
-        // }
-        // settingAvatar()
-    },[])
+    }, [])
 
     return (
         <div className="h-screen w-full flex flex-col text-white bg-gray-800 ">
@@ -138,9 +141,9 @@ const Settings_main = () => {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="flex flex-col items-center space-y-4">
-                                <div className="relative" onClick={() => { console.log("object") }} >
+                                <div className="relative" >
                                     <img
-                                        src={profile.avatar||"https://png.pngitem.com/pimgs/s/24-248235_user-profile-avatar-login-account-fa-user-circle.png"}
+                                        src={profile.avatar || ""}
                                         alt=""
                                         className="w-32 h-32 rounded-full object-cover border-4 border-gray-100"
                                     />
