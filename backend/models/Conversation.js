@@ -9,11 +9,7 @@ const Conversactionschema = mongoose.Schema({
         type: Array,
         required: true
     },
-    LastMessage: {
-        type: String,
-        required: true,
-        default: " hello"
-    },
+
 })
 
 const Conversation = mongoose.model("Conversaction", Conversactionschema)

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-export default function Contact({ Fullname, Email}) {
+export default function Contact({ Fullname,Username,Avatar, Email, Lastmsg = true}) {
   const [rFullname, setrFullname] = useState(Fullname || "Loading...");
-  const [rLastMessage,setLastMessage]=useState("");
-  const [rAvatar,setrAvatar]=useState("");
+  const [rUsername, setrUsername] = useState(Username || "Loading...");
+  const [rLastMessage, setLastMessage] = useState("");
+  const [rLastMessageSender, setLastMessagesender] = useState("");
+  const [rLastMessageTimestamp, setLastMessageTimestamp] = useState("");
+  const [rAvatar, setrAvatar] = useState(Avatar || "...");
 
   // Save receiver's details in localStorage
   useEffect(() => {
@@ -27,6 +30,7 @@ export default function Contact({ Fullname, Email}) {
         for (const user of data) {
           if (user?.user?.email === Email) {
             setrFullname(user.user.Fullname);
+            setrUsername(user.user.Username);
             setrAvatar(user.user.avatar)
             break;
           }
@@ -38,26 +42,25 @@ export default function Contact({ Fullname, Email}) {
     };
     const getlastMessage = async () => {
       try {
-        const response = await fetch("http://localhost:9000/api/getConversations", {
-          method: "GET",
+        const response = await fetch("http://localhost:9000/api/getLastMessage", {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            user1: localStorage.getItem("Email"),
+            user2: localStorage.getItem("receiver_Email")
+          })
         });
         const data = await response.json();
-        const a = localStorage.getItem("Email")
-        for (let i in data) {
-          console.log("hi",data[i].members)
-          const b=data[i].members
-          if(b.includes(localStorage.getItem("Email")) && b.includes(localStorage.getItem("receiver_Email") )){
-            setLastMessage(data[i].LastMessage)
-          }
-        }
+        setLastMessage(data["message"].message)
+        setLastMessageTimestamp(data["message"].timestamp)
+        setLastMessagesender(data["senderUsername"])
       } catch (error) {
         setLastMessage("no message");
       }
     };
-    if(!rLastMessage){
+    if (!rLastMessage) {
       getlastMessage()
     }
 
@@ -65,27 +68,43 @@ export default function Contact({ Fullname, Email}) {
     if (!Fullname) {
       getfullname();
     }
-  }, [Fullname, Email,rLastMessage,rAvatar]);
+  }, [Fullname, Email, rLastMessage, rAvatar]);
 
 
   return (
-    <div onClick={() => {
-      localStorage.setItem("receiver_Email", Email);
-      localStorage.setItem("receiver_Fullname", Fullname ? Fullname : rFullname)
-    }}
-      className={`rounded-lg p-2 mt-1 flex overflow-hidden gap-2 transition duration-200 bg-gray-800 hover:bg-gray-600 cursor-pointer`}>
-      <div>
-        <img
-          className="rounded-full h-12"
-          src={`${rAvatar}`}
-          alt="Profile"
-        />
-      </div>
-      <div className='flex flex-col text-start' >
-        <p className="font-serif text-[20px]">{rFullname}</p>
-        {/* <p className="font-normal">{Email}</p> */}
-        <p className="font-normal">{rLastMessage}</p>
+    <div
+      onClick={() => {
+        localStorage.setItem("receiver_Email", Email);
+        localStorage.setItem("receiver_Fullname", Fullname || rFullname);
+      }}
+      className="p-3 rounded-lg flex items-center gap-3 transition duration-200 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-500"
+    >
+      <img
+        className="rounded-full w-12 h-12 object-cover"
+        src={rAvatar}
+        alt="Profile"
+      />
+
+      {/* Message Info Section */}
+      <div className="flex flex-col w-full">
+        <div className="flex justify-between items-center w-full">
+          <p className="font-semibold text-lg">{rUsername}</p>
+          {Lastmsg &&
+            <p className="text-sm text-gray-400">
+              {new Date(rLastMessageTimestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          }
+        </div>
+        {Lastmsg &&
+          <span className="text-sm text-gray-400 truncate">{rLastMessageSender === localStorage.getItem("Username") ? "You" : rLastMessageSender}
+           {rLastMessage==="no message"?"":": "}
+           {rLastMessage}</span>
+        }
       </div>
     </div>
+
   );
 }

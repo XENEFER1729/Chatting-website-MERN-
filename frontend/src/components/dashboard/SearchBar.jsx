@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import Contact from "./Contact";
-import { ArrowLeft } from "lucide-react";
 
 export default function SearchBar() {
     const [Con, setCon] = useState([]); // Stores filtered contacts
+    const [Avatar, setAvatar] = useState([]); // Stores filtered contacts
 
     // Fetch all users and filter based on input
     const handleOnChange = async (e) => {
         const searchTerm = e.target.value;
         if (searchTerm.trim().length === 0) {
             setCon([]); // Clear results if input is empty
-            return;
+            return; 
         }
 
         try {
@@ -19,10 +19,7 @@ export default function SearchBar() {
                 headers: { "Content-Type": "application/json" },
             });
 
-            if (!response.ok) {
-                console.error("Failed to fetch users");
-                return;
-            }
+          
 
             const data = await response.json();
             const filteredContacts = data
@@ -32,6 +29,8 @@ export default function SearchBar() {
                 .map((item) => ({
                     Fullname: item.user.Fullname,
                     Email: item.user.email,
+                    Avatar:item.user.avatar,
+                    Username:item.user.Username
                 }));
 
             setCon(filteredContacts); // Update state with filtered contacts
@@ -96,7 +95,7 @@ export default function SearchBar() {
                     onClick={() => Establish_conversation(element.Email)} // Pass email to the handler
                     className="cursor-pointer hover:bg-gray-100 mt-2 rounded-md"
                 >
-                    <Contact Fullname={element.Fullname} Email={element.Email} />
+                    <Contact Fullname={element.Fullname} Username={element.Username} Avatar={element.Avatar} Email={element.Email} Lastmsg={false} />
                 </div>
             ))}
         </div>

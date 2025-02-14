@@ -14,9 +14,14 @@ const Messagesschema = mongoose.Schema({
         required: true
     },
     timestamp: {
-        type: Date, 
-        immutable:true,
+        type: Date,
+        immutable: true,
         default: Date.now
+    },
+    msgRead:{
+        type:String,
+        required:true,
+        default:"no"
     }
 })
 

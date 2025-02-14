@@ -41,13 +41,13 @@ app.post("/api/register", async (req, res) => {
     }
 
 
-    const isAlreadyExists = await Users.findOne({ email});
+    const isAlreadyExists = await Users.findOne({ email });
     const isAlreadyExistsUsername = await Users.findOne({ Username });
     if (isAlreadyExists) {
-      return res.status(201).json({message :"User already exists"});
+      return res.status(201).json({ message: "User already exists" });
     }
     if (isAlreadyExistsUsername) {
-      return res.status(201).json({message:"Username already taken"});
+      return res.status(201).json({ message: "Username already taken" });
     }
 
     const hashedPassword = await bcryptjs.hash(password, 10);
@@ -66,17 +66,17 @@ app.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(201).json({message:"Please fill all required fields"});
+      return res.status(201).json({ message: "Please fill all required fields" });
     }
 
     const isAlreadyExists = await Users.findOne({ email });
     if (!isAlreadyExists) {
-      return res.status(201).json({message:"Email not found"});
+      return res.status(201).json({ message: "Email not found" });
     }
 
     const validateUser = await bcryptjs.compare(password, isAlreadyExists.password);
     if (!validateUser) {
-      return res.status(201).json({message:"Invalid Password"});
+      return res.status(201).json({ message: "Invalid Password" });
     }
 
     const jwtSecretKey = process.env.JWT_SECRET_KEY || "this_is_a_jwt_secrete_key";
@@ -107,7 +107,7 @@ app.get("/api/allusers", async (req, res) => {
   try {
     const users = await Users.find();
     const usersData = await Promise.all(users.map(async (user) => {
-      return { user: { email: user.email, Username: user.Username, Fullname: user.Fullname,avatar:user.avatar }, userid: user.userid };
+      return { user: { email: user.email, Username: user.Username, Fullname: user.Fullname, avatar: user.avatar }, userid: user.userid };
     }));
     res.status(200).json(usersData);
   } catch (error) {
@@ -167,6 +167,31 @@ app.get("/api/getConversations", async (req, res) => {
   const allConversations = await Conversation.find()
   return res.status(200).send(allConversations);
 })
+app.post("/api/getLastMessage", async (req, res) => {
+  try { 
+    const { user1, user2 } = req.body;
+    const message = await Message.findOne({
+      $or: [
+        { senderid: user1, receiverid: user2 },
+        { senderid: user2, receiverid: user1 }
+      ]
+    }).sort({ timestamp: -1 });
+
+    if (!message) {
+      return res.status(404).json({ error: "No messages found" });
+    }
+    const sender = await Users.findOne({ email: message.senderid });
+
+    res.status(200).json({
+      message,
+      senderUsername: sender ? sender.Username : null
+    });
+
+  } catch (error) {
+    console.error("Error fetching last message:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.post("/api/getmessage", async (req, res) => {
   const { senderid, receiverid } = req.body;
@@ -190,7 +215,7 @@ app.put("/api/setAvatar", async (req, res) => {
     // console.log(avatarUpdate);
     res.status(200).json({
       message: "Avatar updated successfully",
-      email: email, 
+      email: email,
       newAvatar: avatarnew
     });
   } catch (error) {
@@ -207,9 +232,9 @@ app.post("/api/getAvatar", async (req, res) => {
       email: email
     })
     res.status(201).json(avatarnew);
-  }catch(error){
+  } catch (error) {
     console.log("User not found")
-    res.status(201).json({message:"user not found"})
+    res.status(201).json({ message: "user not found" })
   }
 })
 
