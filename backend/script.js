@@ -168,7 +168,7 @@ app.get("/api/getConversations", async (req, res) => {
   return res.status(200).send(allConversations);
 })
 app.post("/api/getLastMessage", async (req, res) => {
-  try { 
+  try {
     const { user1, user2 } = req.body;
     const message = await Message.findOne({
       $or: [
@@ -184,6 +184,39 @@ app.post("/api/getLastMessage", async (req, res) => {
 
     res.status(200).json({
       message,
+      senderUsername: sender ? sender.Username : null
+    });
+
+  } catch (error) {
+    console.error("Error fetching last message:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.put("/api/UpdateMsgRead", async (req, res) => {
+  try {
+    const { user1, user2, read } = req.body;
+    const messageUpdate = await Message.updateMany(
+      {
+        $or: [
+          { senderid: user1, receiverid: user2 },
+          { senderid: user2, receiverid: user1 }
+        ]
+      },
+      { $set: { msgRead: read } }
+    );
+
+    const message2 = await Message.find({
+      $or: [
+        { senderid: user1, receiverid: user2 },
+        { senderid: user2, receiverid: user1 }
+      ]
+    });
+
+    const sender = await Users.findOne({ email: messageUpdate.senderid });
+
+    res.status(200).json({
+      message2,
       senderUsername: sender ? sender.Username : null
     });
 
@@ -238,6 +271,19 @@ app.post("/api/getAvatar", async (req, res) => {
   }
 })
 
+app.delete("/api/clearChat", async (req, res) => { 
+  const { user1, user2} = req.body;
+  const messages = await Message.deleteMany({
+    $or: [
+      { senderid: user1, receiverid: user2 },
+      { senderid: user2 , receiverid:user1}
+    ]
+  });
+  res.status(200).json({
+    messages,
+  });
+
+})
 
 // Socket.io connection  
 const users_sockets = {}

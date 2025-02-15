@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
-import Contact from '../Contact'
+import Contact from '../Chatting_board_compos/Contact'
 import { Pencil } from 'lucide-react'
 import SearchBar from '../SearchBar'
 
-export default function Chats_list({ Contacts, openChat}) {
+export default function Chats_list({ Contacts, openChat,OnLastMessageSent,setOnLastMessageSent }) {
     const [NewChat, setNewChat] = useState(false);
     const componentRef = useRef(null);
     const [selectedContact, setSelectedContact] = useState(null);
@@ -30,12 +30,12 @@ export default function Chats_list({ Contacts, openChat}) {
                     <div className="border-2 border-primary rounded-full"></div>
                     <h3 className="font-semibold text-xl">{localStorage.getItem("Fullname")} </h3>
                     <h3>My account</h3>
-                </div> 
+                </div>
                 <div className='cursor-pointer mr-5 flex justify-center items-center'>
-                    <div className='w-fit h-fit relative group p-3 hover:bg-gray-700 rounded-full' onClick={()=>{openChat(false)}}>
+                    <div className='w-fit h-fit relative group p-3 hover:bg-gray-700 rounded-full' onClick={() => { openChat(false) }}>
                         <Pencil onClick={() => setNewChat(true)}  ></Pencil>
                         <span className="absolute left-10 top-1/2 -translate-y-1/2 scale-0 transform bg-gray-800 text-white text-sm px-2 py-1 rounded-md opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100">
-                            New Chat 
+                            New Chat
                         </span>
                         {NewChat &&
                             <div ref={componentRef} className='absolute top-3/2'>
@@ -62,7 +62,8 @@ export default function Chats_list({ Contacts, openChat}) {
                             ${selectedContact === key ? "bg-gray-600 text-white" : "bg-gray-800"} `
                         }
                     >
-                            <Contact Email={email}/>
+                        <Contact Email={email}
+                            OnLastMessageSent={OnLastMessageSent} setOnLastMessageSent={setOnLastMessageSent} />
                     </p>
                 ))}
             </div>

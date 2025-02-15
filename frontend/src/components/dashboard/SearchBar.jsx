@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Contact from "./Contact";
+import Contact from "./Chatting_board_compos/Contact";
 
 export default function SearchBar() {
     const [Con, setCon] = useState([]); // Stores filtered contacts

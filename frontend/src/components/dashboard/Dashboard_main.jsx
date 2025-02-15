@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Input from '../form/Input';
 import axios from 'axios';
 import io from 'socket.io-client';
-import Chatting_board from './Chatting_board';
+import Chatting_board from './Chatting_board_compos/Chatting_board';
 import Left_first from './Left_First_Components/Left_first';
 import Chats_list from './Left_second/Chats_list';
 import Settings_main from "./Left_second/settings/Settings_main"
@@ -37,6 +37,7 @@ export default function Dashboard_main() {
   const [msgAI, setMsgAI] = useState('');
   const [messages, setMessages] = useState([]);
   const [messagesAI, setMessagesAI] = useState([]);
+  const [OnLastMessageSent,setOnLastMessageSent]=useState(false);
 
   // Fetch all users and listen to messages
   useEffect(() => {
@@ -66,11 +67,12 @@ export default function Dashboard_main() {
   }, []);
 
   const sendMessage = () => {
+    console.log("setting last msg")
+    setOnLastMessageSent(true);
     // console.log("sending msg :", msg, "to :", localStorage.getItem("receiver_Email"))
     socket.emit('sendone2oneMSG', { senderid: localStorage.getItem("Email"), receiverid: localStorage.getItem("receiver_Email"), message: msg });
     setMessages((prevMessages) => [...prevMessages, { message: msg, sender: "self" }]);
     setMsg('');
-
   };
 
   useEffect(() => {
@@ -159,7 +161,8 @@ export default function Dashboard_main() {
         ActivationIcon={ActivationIcon}
         setisOpenchat={setisOpenchat} />
       {ActivationIcon === "chats" && <Chats_list Contacts={Contacts}
-        openChat={openChat} />}
+        openChat={openChat} 
+        OnLastMessageSent={OnLastMessageSent} setOnLastMessageSent={setOnLastMessageSent} />}
 
       {/* Main Chat Area */}
       {ActivationIcon === "chats" && <Chatting_board sendMessage={sendMessage}
@@ -170,7 +173,8 @@ export default function Dashboard_main() {
         Avatar={Avatar}
         chatting_with={chatting_with}
         chatting_with_state={chatting_with_state}
-        isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
+        setActivationIcon={setActivationIcon}
+        isOpenchat={isOpenchat} setisOpenchat={setisOpenchat}/>}
       {ActivationIcon === "chatbot" && <Chatting_board sendMessage={sendMessageAI}
         setMsg={setMsgAI}
         messages={messagesAI}
