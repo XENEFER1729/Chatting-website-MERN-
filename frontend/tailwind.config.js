@@ -16,7 +16,7 @@ module.exports = {
       keyframes: {
         starburstl: {
           '0%': { opacity: 0, transform: 'translateX(0px) scale(1.0)' },
-          '100%': { opacity: 1, transform: 'translateX(-50px) translateY(-50px) scale(1.9)',filter: 'drop-shadow(0px 0px 3px cyan)' },
+          '100%': { opacity: 1, transform: 'translateX(-50px) translateY(-50px) scale(1.9)', filter: 'drop-shadow(0px 0px 3px cyan)' },
         },
         starburstr: {
           '0%': { opacity: 0, transform: 'translateX(0px) scale(1.0)' },
@@ -46,10 +46,12 @@ module.exports = {
         starburstt: 'starburstt 1s ease-out',
         starburstb: 'starburstb 1s ease-out',
         fadeInUp: 'fadeInUp 1s ease-out',
-        gradientShift:"gradientShift 8s ease infinite"
+        gradientShift: "gradientShift 8s ease infinite"
         // wiggle: 'wiggle 0.5s ease-in-out',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar-hide') // Add the scrollbar-hide plugin
+  ],
 }

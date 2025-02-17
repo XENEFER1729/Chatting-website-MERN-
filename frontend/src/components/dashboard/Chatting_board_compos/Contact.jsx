@@ -82,7 +82,7 @@ export default function Contact({ Fullname,
       });
       const data = await response.json();
       for (let i in data["message2"]) {
-        console.log(data["message2"][i]["msgRead"])
+        // console.log(data["message2"][i]["msgRead"])
         if (data["message2"][i]["msgRead"] == "yes") { setrMsgRead(true) }
         else { setrMsgRead(false); }
       }

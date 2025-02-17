@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react'
 import { useState } from 'react';
 import Chatting_board_Top from './Chatting_board_Top';
-import { Sun } from "lucide-react";
+import Emoji from './Emoji';
+import { Sun, Smile } from "lucide-react";
+import { FaPaperPlane } from 'react-icons/fa'; // Import the send icon
 
 export default function Chatting_board({
     sendMessage,
@@ -17,6 +19,7 @@ export default function Chatting_board({
     isOpenchat, setisOpenchat, }) {
     const messagesEndRef = useRef(null);
     const [messages2, setMessages2] = useState([])
+    const [ShowEmjies, setShowEmjies] = useState(false);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -26,16 +29,16 @@ export default function Chatting_board({
         scrollToBottom();
     }, [messages, messages2]);
 
-    const tailwindColors600 = [
-        "gray-600", "slate-600", "stone-600", "zinc-600", "neutral-600",
-        "red-600", "rose-600",
-        "orange-600", "amber-600",
-        "yellow-600", "lime-600",
-        "green-600", "emerald-600", "teal-600",
-        "blue-600", "sky-600", "cyan-600",
-        "purple-600", "violet-600", "fuchsia-600", "pink-600"
-    ];
-    const [a, seta] = useState(tailwindColors600[Math.floor(Math.random() * tailwindColors600.length)])
+    // const tailwindColors600 = [
+    //     "gray-600", "slate-600", "stone-600", "zinc-600", "neutral-600",
+    //     "red-600", "rose-600",
+    //     "orange-600", "amber-600",
+    //     "yellow-600", "lime-600",
+    //     "green-600", "emerald-600", "teal-600",
+    //     "blue-600", "sky-600", "cyan-600",
+    //     "purple-600", "violet-600", "fuchsia-600", "pink-600"
+    // ];
+    // const [a, seta] = useState(tailwindColors600[Math.floor(Math.random() * tailwindColors600.length)])
     useEffect(() => {
         const fetching_messages = async () => {
             const getMessages = await fetch("http://localhost:9000/api/getmessage", {
@@ -144,25 +147,31 @@ export default function Chatting_board({
                         </div>
                         <div ref={messagesEndRef} />
                     </div>
-                    <div className=" w-full bg-gray-800 text-white ">
+                    <div className=" w-full bg-gray-800 text-white h-fit ">
                         <form onSubmit={(e) => {
                             e.preventDefault()
                             sendMessage();
-                        }} className='flex justify-between items-center align-middle mb-2'>
-                            {!AI && <div className='w-fit bg-black mr-4 text-white'>Emojis</div>}
-                            <div className='w-full'>
-                                <Input
-                                    className=" border-none w-full bg-gray-800 text-white"
-                                    placeholder="Type your message..."
-                                    aria-label="Type your message"
-                                    onChange={(e) => { setMsg(e.target.value); }}
-                                    value={msg}
-                                />
-                            </div>
-                            <div type='submit' className=''>
-                                <button className="p-2 bg-green-700 rounded-sm">
-                                    Send
-                                </button>
+                        }} className='flex justify-between items-center mb-1'>
+                            <div className='w-full flex justify-between align-middle px-2 items-center gap-3'>
+                                {!AI &&
+                                    Smile && <Smile size={24} color="orange" strokeWidth={1.5} className="mr-2 cursor-pointer mt-1"
+                                        onClick={() => { ShowEmjies ? setShowEmjies(false) : setShowEmjies(true) }}
+                                        setMsg={setMsg} msg={msg} />
+                                }
+                                {ShowEmjies && <Emoji />}
+                                <div className='w-full'>
+                                    <Input
+                                        className="border-none bg-gray-800 text-white"
+                                        placeholder="Type your message..."
+                                        aria-label="Type your message"
+                                        onChange={(e) => { setMsg(e.target.value); }}
+                                        value={msg}
+                                    />
+                                </div>
+                                <div type='submit' className=''>
+                                    <FaPaperPlane size={24} color="white" strokeWidth={1.5}
+                                        className='cursor-pointer mt-1' />
+                                </div>
                             </div>
                         </form>
                     </div>

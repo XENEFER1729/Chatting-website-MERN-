@@ -285,12 +285,12 @@ app.delete("/api/clearChat", async (req, res) => {
 
 })
 
-// Socket.io connection  
+// Socket.io connection   
 const users_sockets = {}
 io.on("connection", (socket) => {
   // console.log("A user connected", socket.id);
 
-  socket.on("register", (userid) => {
+  socket.on("register", (userid) => { 
     users_sockets[userid] = socket.id;
     // console.log(`User ${userid} registered with socket ID: ${socket.id}`);
   })

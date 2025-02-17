@@ -5,7 +5,7 @@ export default function Input({ app,
   className,type,
   value,onChange=(e)=>{} }) {
   return (
-    <div className='text-start flex flex-col text-xl gap-3'>
+    <div className='text-start flex flex-col text-xl'>
       <h1>{username}</h1>
       <input type={`${type}`}
        placeholder={`${placeholder}`}

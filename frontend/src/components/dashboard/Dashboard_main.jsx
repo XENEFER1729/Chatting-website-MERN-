@@ -34,6 +34,7 @@ export default function Dashboard_main() {
   //messages
   const [isOpenchat, setisOpenchat] = useState(false)
   const [msg, setMsg] = useState('');
+  const [msgEmoji, setMsgEmoji] = useState('');
   const [msgAI, setMsgAI] = useState('');
   const [messages, setMessages] = useState([]);
   const [messagesAI, setMessagesAI] = useState([]);
@@ -174,6 +175,8 @@ export default function Dashboard_main() {
         chatting_with={chatting_with}
         chatting_with_state={chatting_with_state}
         setActivationIcon={setActivationIcon}
+        setMsgEmoji={setMsgEmoji}
+        msgEmoji={msgEmoji}
         isOpenchat={isOpenchat} setisOpenchat={setisOpenchat}/>}
       {ActivationIcon === "chatbot" && <Chatting_board sendMessage={sendMessageAI}
         setMsg={setMsgAI}
