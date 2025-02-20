@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PhoneCall, Video, Menu, Trash2, Pin, Star, Archive, X, MessageSquare, Settings, HelpCircle, Flag, Info } from "lucide-react";
+import { PhoneCall, Video, Menu, Trash2, Pin, Star, Archive, X, MessageSquare, Settings, Flag } from "lucide-react";
+import VoCallSub from '../Left_second/Voicecalling/VoCallSub';
 
-export default function ChattingboardTop({ more, 
-    video_call, 
-    Avatar, 
-    chatting_with, 
+export default function ChattingboardTop({ more,
+    video_call,
+    Avatar,
+    chatting_with,
     chatting_with_state,
     setcontactchanges,
-    setActivationIcon, 
-    setMessages,setMsg,
+    setActivationIcon,
+    setMessages, setMsg,
     call }) {
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRef = useRef(null);
+    const [Vcall, setVcall] = useState(null)
+    const ref=useRef(null)
 
     // Effect to handle clicks outside the dropdown
     useEffect(() => {
@@ -19,10 +22,17 @@ export default function ChattingboardTop({ more,
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setOpenDropdown(null);
             }
+            if (ref.current && !ref.current.contains(event.target)) {
+                setVcall(null);
+            }
+
         }
 
         // Add event listener if a dropdown is open
         if (openDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        if (Vcall) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
@@ -30,7 +40,9 @@ export default function ChattingboardTop({ more,
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [openDropdown]);
+    }, [openDropdown,Vcall]);
+
+    
 
     const toggleDropdown = (dropdown) => {
         if (openDropdown === dropdown) {
@@ -39,7 +51,7 @@ export default function ChattingboardTop({ more,
             setOpenDropdown(dropdown);
         }
     };
-    const clearChat=async()=>{
+    const clearChat = async () => {
         try {
             const response = await fetch("http://localhost:9000/api/clearChat", {
                 method: "DELETE",
@@ -60,16 +72,17 @@ export default function ChattingboardTop({ more,
         }
     }
 
-    const handleAction =async (action) => {
+    const handleAction = async (action) => {
         console.log(`Selected action: ${action}`);
         setOpenDropdown(null);
         if (action === "clear") {
             clearChat()
         }
-        if(action==="voice-call" || action==="schedule-call"){
-            setActivationIcon("calls")
+        if (action === "voice-call" || action === "schedule-call") {
+            // setActivationIcon("calls")
+            setVcall(true)
         }
-        if(action==="start-video-call" || action==="schedule-video"){
+        if (action === "start-video-call" || action === "schedule-video") {
             setActivationIcon("calls")
         }
     };
@@ -85,6 +98,10 @@ export default function ChattingboardTop({ more,
                     <h1 className="text-gray-300 ml-3">{chatting_with_state}</h1>
                 </div>
             </div>
+            {Vcall &&
+                <div ref={ref}>
+                    <VoCallSub />
+                </div>}
             <div className='flex gap-4 justify-center align-middle items-center' ref={dropdownRef}>
                 {call &&
                     <div className="relative group">
@@ -190,13 +207,13 @@ export default function ChattingboardTop({ more,
                                         <X className="mr-2 h-4 w-4" />
                                         Clear chat
                                     </button>
-                                    <button
+                                    {/* <button
                                         onClick={() => handleAction('pin')}
                                         className="flex items-center w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-600"
                                     >
                                         <Pin className="mr-2 h-4 w-4" />
                                         Pin chat
-                                    </button>
+                                    </button> */}
                                     <button
                                         onClick={() => handleAction('favorite')}
                                         className="flex items-center w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-600"
@@ -211,13 +228,13 @@ export default function ChattingboardTop({ more,
                                         <Settings className="mr-2 h-4 w-4" />
                                         Chat settings
                                     </button>
-                                    <button
+                                    {/* <button
                                         onClick={() => handleAction('report')}
                                         className="flex items-center w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-600"
                                     >
                                         <Flag className="mr-2 h-4 w-4" />
                                         Report
-                                    </button>
+                                    </button> */}
                                     <button
                                         onClick={() => handleAction('delete')}
                                         className="flex items-center w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600"

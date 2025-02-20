@@ -182,6 +182,7 @@ export default function Dashboard_main() {
         msgEmoji={msgEmoji}
         isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
 
+
       {ActivationIcon === "chatbot" && <Chattingboard sendMessage={sendMessageAI}
         setMsg={setMsgAI}
         messages={messagesAI}
