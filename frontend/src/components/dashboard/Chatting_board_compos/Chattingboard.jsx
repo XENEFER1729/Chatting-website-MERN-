@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from 'react'
 import { useState } from 'react';
-import Chatting_board_Top from './Chatting_board_Top';
+import ChattingboardTop from './ChattingboardTop';
 import Emoji from './Emoji';
 import { Sun, Smile } from "lucide-react";
-import { FaPaperPlane } from 'react-icons/fa'; // Import the send icon
+import { FaPaperPlane } from 'react-icons/fa'; //react-icons/fa
 
-export default function Chatting_board({
+export default function Chattingboard({
     sendMessage,
+    setMessages,
+    socket,
     setMsg,
     messages,
     call = true, video_call = true, more = true, AI = false,
@@ -18,8 +20,10 @@ export default function Chatting_board({
     setActivationIcon,
     isOpenchat, setisOpenchat, }) {
     const messagesEndRef = useRef(null);
-    const [messages2, setMessages2] = useState([])
+    const [messages2, setMessages2] = useState(messages);
     const [ShowEmjies, setShowEmjies] = useState(false);
+    const [contactchanges, setcontactchanges] = useState([]);
+    const ref = useRef(null)
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -28,6 +32,19 @@ export default function Chatting_board({
     useEffect(() => {
         scrollToBottom();
     }, [messages, messages2]);
+
+    useEffect(() => {
+        const handleclickoutside = (e) => {
+            // console.log(e.target)
+            if (ref.current && !ref.current.contains(e.target)) {
+                setShowEmjies(false);
+            }
+        }
+        document.addEventListener("mousedown", handleclickoutside);
+        return () => {
+            document.removeEventListener("mousedown", handleclickoutside);
+        };
+    }, [ShowEmjies])
 
     // const tailwindColors600 = [
     //     "gray-600", "slate-600", "stone-600", "zinc-600", "neutral-600",
@@ -39,26 +56,36 @@ export default function Chatting_board({
     //     "purple-600", "violet-600", "fuchsia-600", "pink-600"
     // ];
     // const [a, seta] = useState(tailwindColors600[Math.floor(Math.random() * tailwindColors600.length)])
+    const fetching_messages = async () => {
+        const getMessages = await fetch("http://localhost:9000/api/getmessage", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ senderid: localStorage.getItem("Email"), receiverid: localStorage.getItem("receiver_Email") }),
+            // body: JSON.stringify({ senderid: localStorage.getItem("receiver_Email") , receiverid: localStorage.getItem("Email") })
+        })
+        const data = await getMessages.json()
+        // console.log(data)
+        setMessages2(data)
+        // console.log(messages2)
+    }
+
     useEffect(() => {
-        const fetching_messages = async () => {
-            const getMessages = await fetch("http://localhost:9000/api/getmessage", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ senderid: localStorage.getItem("Email"), receiverid: localStorage.getItem("receiver_Email") }),
-                // body: JSON.stringify({ senderid: localStorage.getItem("receiver_Email") , receiverid: localStorage.getItem("Email") })
-            })
-            const data = await getMessages.json()
-            // console.log(data)
-            setMessages2(data)
-            // console.log(messages2)
-        }
-        if (!AI) {
+        if(!AI){
             fetching_messages()
         }
-
-    })
+    },[messages]);
+    useEffect(() => {
+        if(!AI){
+            fetching_messages()
+        }
+    },[Avatar]);
+    useEffect(() => {
+        if(!AI){
+            fetching_messages()
+        }
+    },[contactchanges]);
     const formatMessage = (text) => {
         if (!text) return [];
         // Split by common sentence endings (., !, ?) but keep the punctuation
@@ -80,12 +107,15 @@ export default function Chatting_board({
         <div className='w-[100%] '>
             {isOpenchat &&
                 <div className=" w-full h-screen border border-gray-900 flex flex-col items-center text-center">
-                    <Chatting_board_Top more={more}
+                    <ChattingboardTop more={more}
                         video_call={video_call}
                         Avatar={Avatar}
                         setActivationIcon={setActivationIcon}
                         chatting_with={chatting_with}
                         chatting_with_state={chatting_with_state}
+                        setcontactchanges={setcontactchanges}
+                        setMessages={setMessages} 
+                        setMsg={setMsg}
                         call={call} />
 
                     <div
@@ -155,10 +185,14 @@ export default function Chatting_board({
                             <div className='w-full flex justify-between align-middle px-2 items-center gap-3'>
                                 {!AI &&
                                     Smile && <Smile size={24} color="orange" strokeWidth={1.5} className="mr-2 cursor-pointer mt-1"
-                                        onClick={() => { ShowEmjies ? setShowEmjies(false) : setShowEmjies(true) }}
+                                        onClick={() => { ShowEmjies ? setShowEmjies(false) : setShowEmjies(true); }}
                                         setMsg={setMsg} msg={msg} />
                                 }
-                                {ShowEmjies && <Emoji />}
+                                {ShowEmjies &&
+                                    <div className='' ref={ref}>
+                                        <Emoji msg={msg} setMsg={setMsg} />
+                                    </div>
+                                }
                                 <div className='w-full'>
                                     <Input
                                         className="border-none bg-gray-800 text-white"
@@ -170,7 +204,7 @@ export default function Chatting_board({
                                 </div>
                                 <div type='submit' className=''>
                                     <FaPaperPlane size={24} color="white" strokeWidth={1.5}
-                                        className='cursor-pointer mt-1' />
+                                        className='cursor-pointer mt-1' onClick={(e) => { e.preventDefault(); sendMessage(); }} />
                                 </div>
                             </div>
                         </form>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 
 export default function Emoji({ msg, setMsg }) {
     // List of emojis
@@ -30,15 +30,15 @@ export default function Emoji({ msg, setMsg }) {
                 />
             </div>
 
-            {/* Emoji Grid */}
             <div className="grid grid-cols-5 gap-2">
                 {filteredEmojis.map((emoji, index) => (
                     <button
                         key={index}
                         className="text-xl p-2 hover:bg-gray-500 rounded"
-                        onClick={() => {
-                            // setMsg(prevMsg => prevMsg + emoji);
-                            console.log(msg) // Append emoji to the message
+                        onClick={(e) => {
+                            e.preventDefault()
+                            setMsg(prevMsg => prevMsg + emoji); // Append emoji to the message
+                            // console.log(msg);
                         }}
                     >
                         {emoji}

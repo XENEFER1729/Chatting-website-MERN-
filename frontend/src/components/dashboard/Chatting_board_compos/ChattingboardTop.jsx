@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PhoneCall, Video, Menu, ChevronDown, Trash2, Pin, Star, Archive, X, MessageSquare, Settings, HelpCircle, Flag, Info } from "lucide-react";
+import { PhoneCall, Video, Menu, Trash2, Pin, Star, Archive, X, MessageSquare, Settings, HelpCircle, Flag, Info } from "lucide-react";
 
-export default function Chatting_board_Top({ more, 
+export default function ChattingboardTop({ more, 
     video_call, 
     Avatar, 
     chatting_with, 
     chatting_with_state,
+    setcontactchanges,
     setActivationIcon, 
+    setMessages,setMsg,
     call }) {
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRef = useRef(null);
@@ -50,6 +52,9 @@ export default function Chatting_board_Top({ more,
                 })
             });
             const data = await response.json();
+            setcontactchanges((prev) => !prev);
+            setMessages((prev) => !prev);
+            setMsg((prev) => !prev);
         } catch (error) {
             console.log();
         }

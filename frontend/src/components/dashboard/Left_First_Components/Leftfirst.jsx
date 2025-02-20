@@ -8,7 +8,7 @@ import {
     Circle,
 } from 'lucide-react';
 
-export default function Left_first({ActivationIcon,setActivationIcon,setisOpenchat}) {
+export default function Leftfirst({ActivationIcon,setActivationIcon,setisOpenchat}) {
 
     return (
         <div className="flex h-screen ">

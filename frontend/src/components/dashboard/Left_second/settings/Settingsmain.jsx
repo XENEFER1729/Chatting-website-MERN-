@@ -30,7 +30,7 @@ const CardContent = ({ children, className = '' }) => (
 );
 
 
-const Settings_main = () => {
+const Settingsmain = () => {
     const [settings, setSettings] = useState({
         darkMode: false,
         notifications: true,
@@ -379,4 +379,4 @@ const Settings_main = () => {
     );
 };
 
-export default Settings_main;
+export default Settingsmain;

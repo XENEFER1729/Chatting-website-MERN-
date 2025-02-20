@@ -5,7 +5,8 @@ export default function Contact({ Fullname,
   Avatar,
   Email,
   Lastmsg = true,
-  OnLastMessageSent, setOnLastMessageSent }) {
+  msgAI,msg,
+  messages,messageAI,}) {
   const [rFullname, setrFullname] = useState(Fullname || "Loading...");
   const [rUsername, setrUsername] = useState(Username || "Loading...");
   const [rLastMessage, setLastMessage] = useState("");
@@ -53,7 +54,7 @@ export default function Contact({ Fullname,
         },
         body: JSON.stringify({
           user1: localStorage.getItem("Email"),
-          user2: localStorage.getItem("receiver_Email")
+          user2: Email
         })
       });
       const data = await response.json();
@@ -61,12 +62,25 @@ export default function Contact({ Fullname,
       setLastMessageTimestamp(data["message"].timestamp)
       // setrMsgRead(data["message"].msgRead)
       setLastMessagesender(data.senderUsername)
-      if (data["message"].msgRead == "yes") { setrMsgRead(true) }
+      if (data["message"].msgRead === "yes") { setrMsgRead(true) }
       else { setrMsgRead(false); }
     } catch (error) {
       setLastMessage("no message");
     }
   };
+  useEffect(() => {
+    getlastMessage();
+  },[msg])
+  useEffect(() => {
+    getlastMessage();
+  },[msgAI])
+  useEffect(() => {
+    getlastMessage();
+  },[messages])
+  useEffect(() => {
+    getlastMessage();
+  },[messageAI])
+ 
   const removeUnread = async (a) => {
     try {
       const response = await fetch("http://localhost:9000/api/UpdateMsgRead", {
@@ -83,7 +97,7 @@ export default function Contact({ Fullname,
       const data = await response.json();
       for (let i in data["message2"]) {
         // console.log(data["message2"][i]["msgRead"])
-        if (data["message2"][i]["msgRead"] == "yes") { setrMsgRead(true) }
+        if (data["message2"][i]["msgRead"] === "yes") { setrMsgRead(true) }
         else { setrMsgRead(false); }
       }
     } catch (error) {
@@ -142,7 +156,7 @@ export default function Contact({ Fullname,
               {rLastMessage === "no message" ? "" : ": "}
               {rLastMessage}</span>
           }
-          {(!rMsgRead && rLastMessageSender != localStorage.getItem("Username"))
+          {(!rMsgRead && rLastMessageSender !== localStorage.getItem("Username"))
             && <div className='h-3 w-3 bg-green-500 rounded-lg'></div>}
         </div>
       </div>

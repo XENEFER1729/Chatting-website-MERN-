@@ -299,7 +299,7 @@ io.on("connection", (socket) => {
     // console.log("sending to ",users_sockets[receiverid],"by ",senderid)
     const newMessage = new Message({
       senderid: senderid,
-      receiverid: receiverid,
+      receiverid: receiverid, 
       message: message
     })
     try {

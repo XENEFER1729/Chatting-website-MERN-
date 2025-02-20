@@ -3,7 +3,9 @@ import Contact from '../Chatting_board_compos/Contact'
 import { Pencil } from 'lucide-react'
 import SearchBar from '../SearchBar'
 
-export default function Chats_list({ Contacts, openChat,OnLastMessageSent,setOnLastMessageSent }) {
+export default function Chatslist({ Contacts, openChat,
+     msg, msgAI,
+     messages,messagesAI }) {
     const [NewChat, setNewChat] = useState(false);
     const componentRef = useRef(null);
     const [selectedContact, setSelectedContact] = useState(null);
@@ -63,7 +65,8 @@ export default function Chats_list({ Contacts, openChat,OnLastMessageSent,setOnL
                         }
                     >
                         <Contact Email={email}
-                            OnLastMessageSent={OnLastMessageSent} setOnLastMessageSent={setOnLastMessageSent} />
+                            msg={msg} msgAI={msgAI}
+                            messages={messages} messagesAI={messagesAI}/>
                     </p>
                 ))}
             </div>

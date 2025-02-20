@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Input from '../form/Input';
 import axios from 'axios';
 import io from 'socket.io-client';
-import Chatting_board from './Chatting_board_compos/Chatting_board';
-import Left_first from './Left_First_Components/Left_first';
-import Chats_list from './Left_second/Chats_list';
-import Settings_main from "./Left_second/settings/Settings_main"
+import Chattingboard from './Chatting_board_compos/Chattingboard';
+import Leftfirst from './Left_First_Components/Leftfirst';
+import Chatslist from './Left_second/Chatslist';
+import Settingsmain from "./Left_second/settings/Settingsmain"
 
 // Connecting to the backend server
 const socket = io("http://localhost:9000");
@@ -38,7 +38,6 @@ export default function Dashboard_main() {
   const [msgAI, setMsgAI] = useState('');
   const [messages, setMessages] = useState([]);
   const [messagesAI, setMessagesAI] = useState([]);
-  const [OnLastMessageSent,setOnLastMessageSent]=useState(false);
 
   // Fetch all users and listen to messages
   useEffect(() => {
@@ -56,7 +55,7 @@ export default function Dashboard_main() {
 
   useEffect(() => {
     socket.on("receiveone2one", ({ sender, message, senderid }) => {
-      console.log(`Message from ${sender}: ${message} from: ${senderid}`)
+      // console.log(`Message from ${sender}: ${message} from: ${senderid}`)
       setMessages((prevMessages) => [...prevMessages, { message: message, sender: "other" }]);
       setMsg('');
     });
@@ -67,9 +66,9 @@ export default function Dashboard_main() {
     };
   }, []);
 
+
   const sendMessage = () => {
-    console.log("setting last msg")
-    setOnLastMessageSent(true);
+    // console.log("setting last msg")
     // console.log("sending msg :", msg, "to :", localStorage.getItem("receiver_Email"))
     socket.emit('sendone2oneMSG', { senderid: localStorage.getItem("Email"), receiverid: localStorage.getItem("receiver_Email"), message: msg });
     setMessages((prevMessages) => [...prevMessages, { message: msg, sender: "self" }]);
@@ -89,10 +88,10 @@ export default function Dashboard_main() {
       const a = localStorage.getItem("Email")
       for (let i in data) {
         // console.log(data[i]["members"])
-        if (data[i]["members"][0] == a) {
+        if (data[i]["members"][0] === a) {
           Contact[i] = data[i]["members"][1]
         }
-        if (data[i]["members"][1] == a) {
+        if (data[i]["members"][1] === a) {
           Contact[i] = data[i]["members"][0]
         }
       }
@@ -130,11 +129,11 @@ export default function Dashboard_main() {
     set_chatting_with(localStorage.getItem("receiver_Fullname"))
     getAvatar();
   }
-  const sendMessageAI = async() => {
+  const sendMessageAI = async () => {
     setMessagesAI((prevMessages) => [...prevMessages, { message: msgAI, sender: "self" }]);
 
-    try{
-      const datafetch=await fetch(API, {
+    try {
+      const datafetch = await fetch(API, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -145,11 +144,11 @@ export default function Dashboard_main() {
           }]
         })
       })
-      const data=await datafetch.json()
+      const data = await datafetch.json()
       // console.log(data.candidates[0].content.parts[0].text)
       setMessagesAI((prevMessages) => [...prevMessages, { message: data.candidates[0].content.parts[0].text, sender: "other" }]);
-    }catch(error){
-      console.log("error in fetching ai questions: ",error)
+    } catch (error) {
+      console.log("error in fetching ai questions: ", error)
     }
 
     setMsgAI('');
@@ -158,17 +157,21 @@ export default function Dashboard_main() {
 
   return (
     <div className="w-screen h-screen flex  ">
-      <Left_first setActivationIcon={setActivationIcon}
+      <Leftfirst setActivationIcon={setActivationIcon}
         ActivationIcon={ActivationIcon}
         setisOpenchat={setisOpenchat} />
-      {ActivationIcon === "chats" && <Chats_list Contacts={Contacts}
-        openChat={openChat} 
-        OnLastMessageSent={OnLastMessageSent} setOnLastMessageSent={setOnLastMessageSent} />}
+
+      {ActivationIcon === "chats" && <Chatslist Contacts={Contacts}
+        msg={msg} msgAI={msgAI}
+        messages={messages} messagesAI={messagesAI}
+        openChat={openChat} />}
 
       {/* Main Chat Area */}
-      {ActivationIcon === "chats" && <Chatting_board sendMessage={sendMessage}
+      {ActivationIcon === "chats" && <Chattingboard sendMessage={sendMessage}
         setMsg={setMsg}
         messages={messages}
+        setMessages={setMessages}
+        socket={socket}
         Input={Input}
         msg={msg}
         Avatar={Avatar}
@@ -177,8 +180,9 @@ export default function Dashboard_main() {
         setActivationIcon={setActivationIcon}
         setMsgEmoji={setMsgEmoji}
         msgEmoji={msgEmoji}
-        isOpenchat={isOpenchat} setisOpenchat={setisOpenchat}/>}
-      {ActivationIcon === "chatbot" && <Chatting_board sendMessage={sendMessageAI}
+        isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
+
+      {ActivationIcon === "chatbot" && <Chattingboard sendMessage={sendMessageAI}
         setMsg={setMsgAI}
         messages={messagesAI}
         Input={Input}
@@ -189,7 +193,7 @@ export default function Dashboard_main() {
         chatting_with_state={"online"}
         call={false} video_call={false} more={false}
         isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
-      {ActivationIcon === "settings" && <Settings_main />}
+      {ActivationIcon === "settings" && <Settingsmain />}
     </div>
   );
 }
