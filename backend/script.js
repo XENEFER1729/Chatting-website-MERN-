@@ -271,12 +271,47 @@ app.post("/api/getAvatar", async (req, res) => {
   }
 })
 
-app.delete("/api/clearChat", async (req, res) => { 
-  const { user1, user2} = req.body;
+app.post("/api/setCallingId", async (req, res) => {
+  const { email, callingId } = req.body;
+  try {
+    const callingIdUpdate = await Users.updateOne(
+      { email: email },
+      { $set: { callingId } }
+    )
+    res.status(201).json({
+      message: "CallingId updated successfully",
+      email: email,
+      callingId: callingId
+    });
+  } catch (error) {
+    console.error("Error updating callingId:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+})
+app.post("/api/getCallingId", async (req, res) => {
+  const { email } = req.body;  
+
+  try {
+    const user = await Users.findOne({ email }).lean(); 
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ callingId: user.callingId });
+  } catch (error) {
+    console.error("Error fetching callingId:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+app.delete("/api/clearChat", async (req, res) => {
+  const { user1, user2 } = req.body;
   const messages = await Message.deleteMany({
     $or: [
       { senderid: user1, receiverid: user2 },
-      { senderid: user2 , receiverid:user1}
+      { senderid: user2, receiverid: user1 }
     ]
   });
   res.status(200).json({
@@ -290,7 +325,7 @@ const users_sockets = {}
 io.on("connection", (socket) => {
   // console.log("A user connected", socket.id);
 
-  socket.on("register", (userid) => { 
+  socket.on("register", (userid) => {
     users_sockets[userid] = socket.id;
     // console.log(`User ${userid} registered with socket ID: ${socket.id}`);
   })
@@ -299,7 +334,7 @@ io.on("connection", (socket) => {
     // console.log("sending to ",users_sockets[receiverid],"by ",senderid)
     const newMessage = new Message({
       senderid: senderid,
-      receiverid: receiverid, 
+      receiverid: receiverid,
       message: message
     })
     try {
