@@ -11,7 +11,7 @@ import {
 export default function CMenu() {
   return (
     <div>
-      
+      <p>Hello from CMenu</p>
     </div>
   )
 }

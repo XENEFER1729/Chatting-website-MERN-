@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PhoneCall, Video, Menu, Trash2, Pin, Star, Archive, X, MessageSquare, Settings, Flag } from "lucide-react";
+import { PhoneCall, Video, Menu, Trash2, Pin, Star, Archive, X, MessageSquare, Settings } from "lucide-react";
 import VoCallSub from '../Left_second/Voicecalling/VoCallSub';
 
 export default function ChattingboardTop({ more,
@@ -16,14 +16,12 @@ export default function ChattingboardTop({ more,
     const [Vcall, setVcall] = useState(null)
     const ref=useRef(null)
 
+
     // Effect to handle clicks outside the dropdown
     useEffect(() => {
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setOpenDropdown(null);
-            }
-            if (ref.current && !ref.current.contains(event.target)) {
-                setVcall(null);
             }
 
         }
@@ -32,15 +30,12 @@ export default function ChattingboardTop({ more,
         if (openDropdown) {
             document.addEventListener('mousedown', handleClickOutside);
         }
-        if (Vcall) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
 
         // Cleanup the event listener
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [openDropdown,Vcall]);
+    }, [openDropdown]);
 
     
 
@@ -59,8 +54,8 @@ export default function ChattingboardTop({ more,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    user1: localStorage.getItem("Email"),
-                    user2: localStorage.getItem("receiver_Email"),
+                    email: localStorage.getItem("Email"),
+                    receiver_email: localStorage.getItem("receiver_Email")
                 })
             });
             const data = await response.json();
@@ -80,7 +75,7 @@ export default function ChattingboardTop({ more,
         }
         if (action === "voice-call" || action === "schedule-call") {
             // setActivationIcon("calls")
-            setVcall(true)
+            Vcall?setVcall(false):setVcall(true)
         }
         if (action === "start-video-call" || action === "schedule-video") {
             setActivationIcon("calls")
@@ -100,7 +95,7 @@ export default function ChattingboardTop({ more,
             </div>
             {Vcall &&
                 <div ref={ref}>
-                    <VoCallSub />
+                    <VoCallSub setVcall={setVcall} Vcall={Vcall}  />
                 </div>}
             <div className='flex gap-4 justify-center align-middle items-center' ref={dropdownRef}>
                 {call &&
