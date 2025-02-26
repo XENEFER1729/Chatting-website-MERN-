@@ -5,13 +5,18 @@ import { BrowserRouter as Router, Route, Routes, } from 'react-router-dom';
 import Home_main from './components/Home.jsx/Home_main';
 import Practice from './components/Practice';
 import Login from './components/form/Login';
+import { useState } from 'react';
 
 function App() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<Home_main/>}></Route>
+        <Route path='/' element={<Home_main />}></Route>
         <Route path='/chat' element={<Dashboard_main />}></Route>
         <Route path='/signup' element={<Maincompo />}> </Route>
         <Route path='/login' element={<Login />}> </Route>

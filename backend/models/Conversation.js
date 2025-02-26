@@ -9,6 +9,18 @@ const Conversactionschema = mongoose.Schema({
         type: Array,
         required: true
     },
+    favorate:{
+        type:Boolean,
+        default:false
+    },
+    locked:{
+        type:Boolean,
+        default:false
+    },
+    archived:{
+        type:Boolean,
+        default:false
+    },
 
 })
 

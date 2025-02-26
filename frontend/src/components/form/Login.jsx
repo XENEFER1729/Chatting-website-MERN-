@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ const Login = () => {
         email: '',
         password: ''
     });
+
     const [rememberMe, setRememberMe] = useState(false);
 
     const handleInputChange = (e) => {
@@ -23,7 +25,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Login submitted:', formData);
+        // console.log('Login submitted:', formData);
 
         try {
             const response = await fetch(`http://localhost:9000/api/login`, {
@@ -35,14 +37,14 @@ const Login = () => {
             });
 
             const result = await response.json();
-            console.log(result);
+            // console.log(result);
             if (result.message === "Email not found") {
                 setErrorMessage("Email not found")
             }
             if (result.message === "Invalid Password") {
                 setErrorMessage("Invalid Password")
             }
-            if (result.message != "Email not found" && result.message != "Invalid Password") {
+            if (result.message !== "Email not found" && result.message !== "Invalid Password") {
                 localStorage.setItem("Email", formData.email);
 
                 const nameFetch = await fetch("http://localhost:9000/api/allusers", {
@@ -99,7 +101,7 @@ const Login = () => {
                             </h1>
                             <p className="text-gray-400 mt-4">
                                 New Here?{' '}
-                                <a href="#" onClick={(e) => { e.preventDefault(); navigate("/signup") }} className="text-blue-500 hover:text-blue-400">
+                                <a href="/" onClick={(e) => { e.preventDefault(); navigate("/signup") }} className="text-blue-500 hover:text-blue-400">
                                     Create an Account
                                 </a>
                             </p>
@@ -127,7 +129,7 @@ const Login = () => {
                             <div className="space-y-1">
                                 <div className="flex justify-between">
                                     <label htmlFor="password" className="text-sm text-gray-300">Password</label>
-                                    <a href="#" className="text-sm text-blue-500 hover:text-blue-400">Forgot password?</a>
+                                    <a href="/" className="text-sm text-blue-500 hover:text-blue-400">Forgot password?</a>
                                 </div>
                                 <div className="relative">
                                     <input

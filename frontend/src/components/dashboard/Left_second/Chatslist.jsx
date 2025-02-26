@@ -3,9 +3,13 @@ import Contact from '../Chatting_board_compos/Contact'
 import { Pencil } from 'lucide-react'
 import SearchBar from '../SearchBar'
 
-export default function Chatslist({ Contacts, openChat,
-     msg, msgAI,
-     messages,messagesAI }) {
+
+export default function Chatslist({ Contacts,
+    ContactsArchived, ContactsLocked, ContactsFavorate,
+    Archived=false,Locked = false, Favorate = false,
+    openChat,
+    msg, msgAI, 
+    messages, messagesAI ,ActivationIcon}) {
     const [NewChat, setNewChat] = useState(false);
     const componentRef = useRef(null);
     const [selectedContact, setSelectedContact] = useState(null);
@@ -24,6 +28,13 @@ export default function Chatslist({ Contacts, openChat,
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+    useEffect(()=>{
+        // console.log(Archived)
+        // console.log(Favorate)
+        // console.log(Locked)
+        // console.log(ContactsArchived)
+        // console.log(ActivationIcon)
+    },[])
 
     return (
         <div className="w-[35%] border border-gray-900 bg-gray-800 text-white">
@@ -48,28 +59,118 @@ export default function Chatslist({ Contacts, openChat,
                 </div>
             </div>
 
-            <div className="ml-3 mr-3 mt-3 overflow-hidden h-[85vh]">
-                <h3 className="font-semibold text-lg">Contacts and Groups</h3>
-                {Object.entries(Contacts).map(([key, email]) => (
-                    <p
-                        key={key}
-                        onMouseOver={() => {
-                            sethoveredContact(key);
-                        }}
-                        onClick={() => {
-                            openChat();
-                            setSelectedContact(key);
-                        }}
-                        className={` cursor-pointer rounded-lg transition-colors duration-200 mt-1 
+            {(!Archived && !Locked && !Favorate) &&
+                <div className="ml-3 mr-3 mt-3 overflow-hidden h-[85vh]">
+                    <h3 className="font-semibold text-lg">Contacts</h3>
+                    {Object.entries(Contacts).map(([key, email]) => (
+                        <p
+                            key={key}
+                            onMouseOver={() => {
+                                sethoveredContact(key);
+                            }}
+                            onClick={() => {
+                                openChat();
+                                setSelectedContact(key);
+                            }}
+                            className={` cursor-pointer rounded-lg transition-colors duration-200 mt-1 
                             ${selectedContact === key ? "bg-gray-600 text-white" : "bg-gray-800"} `
-                        }
-                    >
-                        <Contact Email={email}
-                            msg={msg} msgAI={msgAI}
-                            messages={messages} messagesAI={messagesAI}/>
-                    </p>
-                ))}
-            </div>
+                            }
+                        >
+                            {(ContactsArchived[key] === Archived && ContactsFavorate[key] === Favorate && ContactsLocked[key] === Locked)
+                                &&
+                                <Contact Email={email}
+                                    msg={msg} msgAI={msgAI}
+                                    messages={messages} messagesAI={messagesAI}
+                                archive={Archived} />
+                            }
+                        </p>
+                    ))}
+                </div>}
+
+            {(Archived && !Locked && !Favorate)&&
+                <div className="ml-3 mr-3 mt-3 overflow-hidden h-[85vh]">
+                    <h3 className="font-semibold text-lg">Archived</h3>
+                    {Object.entries(Contacts).map(([key, email]) => (
+                        <p
+                            key={key}
+                            onMouseOver={() => {
+                                sethoveredContact(key);
+                            }}
+                            onClick={() => {
+                                openChat();
+                                setSelectedContact(key);
+                            }}
+                            className={` cursor-pointer rounded-lg transition-colors duration-200 mt-1 
+                            ${selectedContact === key ? "bg-gray-600 text-white" : "bg-gray-800"} `
+                            }
+                        >
+                            {/* {console.log(ContactsArchived[key])} */}
+                            {(ContactsArchived[key] === Archived && ContactsLocked[key] === Locked && ContactsFavorate[key] === Favorate )
+                                &&
+                                <Contact Email={email}
+                                    msg={msg} msgAI={msgAI}
+                                    messages={messages} messagesAI={messagesAI}
+                                    archive={Archived} />
+                            }
+                        </p>
+                    ))}
+                </div>}
+            {(!Archived && !Locked && Favorate)&&
+                <div className="ml-3 mr-3 mt-3 overflow-hidden h-[85vh]">
+                    <h3 className="font-semibold text-lg">Favorate</h3>
+                    {Object.entries(Contacts).map(([key, email]) => (
+                        <p
+                            key={key}
+                            onMouseOver={() => {
+                                sethoveredContact(key);
+                            }}
+                            onClick={() => {
+                                openChat();
+                                setSelectedContact(key);
+                            }}
+                            className={` cursor-pointer rounded-lg transition-colors duration-200 mt-1 
+                            ${selectedContact === key ? "bg-gray-600 text-white" : "bg-gray-800"} `
+                            }
+                        >
+                            {/* {console.log(ContactsArchived[key])} */}
+                            {(ContactsArchived[key] === Archived && ContactsLocked[key] === Locked && ContactsFavorate[key] === Favorate )
+                                &&
+                                <Contact Email={email}
+                                    msg={msg} msgAI={msgAI}
+                                    messages={messages} messagesAI={messagesAI}
+                                    archive={Archived} />
+                            }
+                        </p>
+                    ))}
+                </div>}
+            {(!Archived && Locked && !Favorate)&&
+                <div className="ml-3 mr-3 mt-3 overflow-hidden h-[85vh]">
+                    <h3 className="font-semibold text-lg">Locked</h3>
+                    {Object.entries(Contacts).map(([key, email]) => (
+                        <p
+                            key={key}
+                            onMouseOver={() => {
+                                sethoveredContact(key);
+                            }}
+                            onClick={() => {
+                                openChat();
+                                setSelectedContact(key);
+                            }}
+                            className={` cursor-pointer rounded-lg transition-colors duration-200 mt-1 
+                            ${selectedContact === key ? "bg-gray-600 text-white" : "bg-gray-800"} `
+                            }
+                        >
+                            {(ContactsArchived[key] === Archived && ContactsLocked[key] === Locked && ContactsFavorate[key] === Favorate )
+                                &&
+                                <Contact Email={email}
+                                    msg={msg} msgAI={msgAI}
+                                    messages={messages} messagesAI={messagesAI}
+                                    archive={Archived} />
+                            }
+                        </p>
+                    ))}
+                </div>}
+
         </div>
     );
 }

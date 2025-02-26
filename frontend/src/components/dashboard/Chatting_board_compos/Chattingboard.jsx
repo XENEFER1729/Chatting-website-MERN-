@@ -6,6 +6,8 @@ import { Sun, Smile } from "lucide-react";
 import { FaPaperPlane } from 'react-icons/fa'; //react-icons/fa
 
 export default function Chattingboard({
+    archive = false,
+    locked = false,
     sendMessage,
     setMessages,
     socket,

@@ -35,7 +35,7 @@ const userschema=mongoose.Schema({
     callingId:{
         type:String,
         default:""
-    }
+    },
 })
 
 const User=mongoose.model("user",userschema)

@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { Archive } from 'lucide-react'
 
 export default function Contact({ Fullname,
   Username,
+  archive = false,
+  locked = false,
+  favorate=false,
   Avatar,
   Email,
   Lastmsg = true,
-  msgAI,msg,
-  messages,messageAI,}) {
+  msgAI, msg,
+  messages, messageAI, }) {
   const [rFullname, setrFullname] = useState(Fullname || "Loading...");
   const [rUsername, setrUsername] = useState(Username || "Loading...");
   const [rLastMessage, setLastMessage] = useState("");
@@ -70,17 +74,17 @@ export default function Contact({ Fullname,
   };
   useEffect(() => {
     getlastMessage();
-  },[msg])
+  }, [msg])
   useEffect(() => {
     getlastMessage();
-  },[msgAI])
+  }, [msgAI])
   useEffect(() => {
     getlastMessage();
-  },[messages])
+  }, [messages])
   useEffect(() => {
     getlastMessage();
-  },[messageAI])
- 
+  }, [messageAI])
+
   const removeUnread = async (a) => {
     try {
       const response = await fetch("http://localhost:9000/api/UpdateMsgRead", {
@@ -138,7 +142,7 @@ export default function Contact({ Fullname,
       />
 
       {/* Message Info Section */}
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col items-center justify-center w-full h-fit ">
         <div className="flex justify-between items-center w-full">
           <p className="font-semibold text-lg">{rUsername}</p>
           {Lastmsg &&
@@ -150,14 +154,21 @@ export default function Contact({ Fullname,
             </p>
           }
         </div>
-        <div className='flex justify-between items-center'>
+        <div className='flex justify-between items-center w-full'>
           {Lastmsg &&
-            <span className="text-sm text-gray-400 truncate">{rLastMessageSender === localStorage.getItem("Username") ? "You" : rLastMessageSender}
+            <div className="text-sm text-gray-400 max-w-[70%] ">
+              {rLastMessageSender === localStorage.getItem("Username") ? "You" : rLastMessageSender.slice(0, 10)}
               {rLastMessage === "no message" ? "" : ": "}
-              {rLastMessage}</span>
+              {rLastMessage.slice(0, 10)}
+            </div>
           }
           {(!rMsgRead && rLastMessageSender !== localStorage.getItem("Username"))
-            && <div className='h-3 w-3 bg-green-500 rounded-lg'></div>}
+            && <div className='h-3 w-3 bg-green-500 rounded-lg '></div>}
+          {archive &&
+            <div>
+              <Archive className="w-4 h-4" />
+            </div>
+          }
         </div>
       </div>
     </div>

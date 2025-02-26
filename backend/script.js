@@ -257,7 +257,6 @@ app.put("/api/setAvatar", async (req, res) => {
   }
 });
 
-
 app.post("/api/getAvatar", async (req, res) => {
   const { email } = req.body;
   try {
@@ -269,6 +268,95 @@ app.post("/api/getAvatar", async (req, res) => {
     console.log("User not found")
     res.status(201).json({ message: "user not found" })
   }
+})
+
+app.post("/api/archive", async (req, res) => {
+  const { user1, user2, archived } = req.body;
+
+  try {
+    const updatedConversation = await Conversation.updateOne(
+      { members: { $all: [user1, user2] } }, // Find conversation with both users
+      {
+        $set: {
+          favorate: !archived, // Toggle favorite status
+          locked: !archived,   // Toggle locked status
+          archived: archived   // Set archived status
+        }
+      }
+    );
+
+    res.status(201).json(updatedConversation);
+  } catch (error) {
+    console.log("Error updating conversation:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/api/archive", async (req, res) => {
+  const { user1, user2, archived } = req.body;
+
+  try {
+    const updatedConversation = await Conversation.updateOne(
+      { members: { $all: [user1, user2] } }, // Find conversation with both users
+      {
+        $set: {
+          favorate: archived, // Toggle favorite status
+          locked: !archived,   // Toggle locked status
+          archived: !archived   // Set archived status
+        }
+      }
+    );
+
+    res.status(201).json(updatedConversation);
+  } catch (error) {
+    console.log("Error updating conversation:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/api/archive", async (req, res) => {
+  const { user1, user2, archived } = req.body;
+
+  try {
+    const updatedConversation = await Conversation.updateOne(
+      { members: { $all: [user1, user2] } }, // Find conversation with both users
+      {
+        $set: {
+          favorate: !archived, // Toggle favorite status
+          locked: archived,   // Toggle locked status
+          archived: !archived   // Set archived status
+        }
+      }
+    );
+
+    res.status(201).json(updatedConversation);
+  } catch (error) {
+    console.log("Error updating conversation:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+
+app.delete("/api/clearConversation", async (req, res) => {
+  const { user1, user2 } = req.body;
+  const conv = await Conversation.deleteOne({
+    $or: [
+      { senderid: user1, receiverid: user2 },
+      { senderid: user2, receiverid: user1 }
+    ]
+  });
+  const messages = await Message.deleteOne({
+    $or: [
+      { senderid: user1, receiverid: user2 },
+      { senderid: user2, receiverid: user1 }
+    ]
+  });
+  res.status(200).json({
+    messages, conv
+  });
+
 })
 
 app.post("/api/setCallingId", async (req, res) => {
@@ -289,10 +377,10 @@ app.post("/api/setCallingId", async (req, res) => {
   }
 })
 app.post("/api/getCallingId", async (req, res) => {
-  const { email } = req.body;  
+  const { email } = req.body;
 
   try {
-    const user = await Users.findOne({ email }).lean(); 
+    const user = await Users.findOne({ email }).lean();
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

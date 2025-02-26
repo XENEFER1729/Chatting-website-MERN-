@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PhoneCall, Video, Menu, Trash2, Pin, Star, Archive, X, MessageSquare, Settings } from "lucide-react";
+import { PhoneCall, Video, Menu, Trash2,Star, Archive, X, MessageSquare, Settings,Lock } from "lucide-react";
 import VoCallSub from '../Left_second/Voicecalling/VoCallSub';
 
 export default function ChattingboardTop({ more,
@@ -66,6 +66,30 @@ export default function ChattingboardTop({ more,
             console.log();
         }
     }
+    const ArchiveChat = async (task,value,operation="archived") => {
+        const url=`http://localhost:9000/api/${task}`
+        // console.log(url)
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user1:localStorage.getItem("Email"),
+                    user2:localStorage.getItem("receiver_Email"),
+                    [operation]:value
+                })
+            });
+            const data = await response.json();
+            console.log(data)
+            setcontactchanges((prev) => !prev);
+            setMessages((prev) => !prev);
+            setMsg((prev) => !prev);
+        } catch (error) {
+            console.log();
+        }
+    }
 
     const handleAction = async (action) => {
         console.log(`Selected action: ${action}`);
@@ -79,6 +103,21 @@ export default function ChattingboardTop({ more,
         }
         if (action === "start-video-call" || action === "schedule-video") {
             setActivationIcon("calls")
+        }
+        if (action === "archive" || action === "schedule-video") {
+            // setActivationIcon("archive")
+            console.log("archive")
+            ArchiveChat("archive",true,"archived");
+        }
+        if (action === "favorite" || action === "schedule-video") {
+            // setActivationIcon("archive")
+            console.log("favorite")
+            ArchiveChat("favorate",true,"favorate");
+        }
+        if (action === "lock" || action === "schedule-video") {
+            // setActivationIcon("archive")
+            console.log("lock")
+            ArchiveChat("lock",true,"lock");
         }
     };
 
@@ -104,7 +143,7 @@ export default function ChattingboardTop({ more,
                             onClick={() => toggleDropdown('call')}
                             className="hover:bg-gray-700 rounded-full p-2 cursor-pointer"
                         >
-                            <PhoneCall size={24} className="m-1" />
+                            {/* <PhoneCall size={24} className="m-1" /> */}
 
                             {/* Tooltip */}
                             <span className="absolute left-1/2 -translate-x-1/2 top-full mb-2 hidden group-hover:flex 
@@ -143,7 +182,7 @@ export default function ChattingboardTop({ more,
                             onClick={() => toggleDropdown('video')}
                             className="hover:bg-gray-700 rounded-full p-2 cursor-pointer"
                         >
-                            <Video size={24} className="m-1" />
+                            {/* <Video size={24} className="m-1" /> */}
 
                             {/* Tooltip */}
                             <span className="absolute left-1/2 -translate-x-1/2 top-full mb-2 hidden group-hover:flex 
@@ -215,6 +254,13 @@ export default function ChattingboardTop({ more,
                                     >
                                         <Star className="mr-2 h-4 w-4" />
                                         Add to favorites
+                                    </button>
+                                    <button
+                                        onClick={() => handleAction('lock')}
+                                        className="flex items-center w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-600"
+                                    >
+                                        <Lock className="mr-2 h-4 w-4" />
+                                        Lock Chat
                                     </button>
                                     <button
                                         onClick={() => handleAction('settings')}

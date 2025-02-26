@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Video, VideoOff, Mic, MicOff, Phone, PhoneOff, MoreVertical, Minimize,Maximize2  } from 'lucide-react';
 import Peer from 'peerjs';
-import { set } from 'mongoose';
 
 const VoCallSub = ({ VoiceCall = true, VideoCall = false, Vcall, setVcall }) => {
   const [callStatus, setCallStatus] = useState('idle');

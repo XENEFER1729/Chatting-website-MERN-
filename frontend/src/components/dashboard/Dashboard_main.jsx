@@ -30,6 +30,9 @@ export default function Dashboard_main() {
   const [chatting_with, set_chatting_with] = useState("AI chatbot")
   const [chatting_with_state, set_chatting_with_state] = useState("active")
   const [Contacts, setContacts] = useState("")
+  const [ContactsArchived, setContactsArchived] = useState("")
+  const [ContactsLocked, setContactsLocked] = useState("")
+  const [ContactsFavorate, setContactsFavorate] = useState("")
 
   //messages
   const [isOpenchat, setisOpenchat] = useState(false)
@@ -78,6 +81,9 @@ export default function Dashboard_main() {
   useEffect(() => {
     const fetchdata = async () => {
       const Contact = {}
+      const Archived = {}
+      const Locked = {}
+      const Favorate = {}
       const contactsfetch = await fetch("http://localhost:9000/api/getConversations", {
         method: "GET",
         headers: {
@@ -85,22 +91,39 @@ export default function Dashboard_main() {
         }
       })
       const data = await contactsfetch.json()
+      // console.log(data)
       const a = localStorage.getItem("Email")
       for (let i in data) {
         // console.log(data[i]["members"])
         if (data[i]["members"][0] === a) {
           Contact[i] = data[i]["members"][1]
+          Archived[i] = data[i]["archived"]
+          Locked[i] = data[i]["locked"]
+          Favorate[i] = data[i]["favorate"]
         }
         if (data[i]["members"][1] === a) {
           Contact[i] = data[i]["members"][0]
+          Archived[i] = data[i]["archived"]
+          Locked[i] = data[i]["locked"]
+          Favorate[i] = data[i]["favorate"]
         }
       }
+      // console.log(Archived)
+      // console.log(Favorate)
+      // console.log(Locked)
       setContacts(Contact)
+      setContactsArchived(Archived)
+      setContactsLocked(Locked)
+      setContactsFavorate(Favorate)
       // console.log(Contacts)
+      // console.log("archived: ",ContactsArchived)
+      // console.log("Favorate : ",ContactsFavorate)
+      // console.log("Locked: ",ContactsLocked)
 
     }
     fetchdata()
   })
+
   const getAvatar = async () => {
     try {
       const response = await fetch("http://localhost:9000/api/allusers", {
@@ -155,13 +178,19 @@ export default function Dashboard_main() {
 
   }
 
+
   return (
     <div className="w-screen h-screen flex  ">
       <Leftfirst setActivationIcon={setActivationIcon}
         ActivationIcon={ActivationIcon}
         setisOpenchat={setisOpenchat} />
 
-      {ActivationIcon === "chats" && <Chatslist Contacts={Contacts}
+      {ActivationIcon === "chats" && <Chatslist
+        Contacts={Contacts}
+        ContactsArchived={ContactsArchived}
+        ContactsLocked={ContactsLocked}
+        ContactsFavorate={ContactsFavorate}
+        Archived={false}
         msg={msg} msgAI={msgAI}
         messages={messages} messagesAI={messagesAI}
         openChat={openChat} />}
@@ -195,6 +224,86 @@ export default function Dashboard_main() {
         call={false} video_call={false} more={false}
         isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
       {ActivationIcon === "settings" && <Settingsmain />}
+
+
+      {ActivationIcon === "archive" && <Chatslist
+      ActivationIcon={ActivationIcon}
+        Contacts={Contacts}
+        ContactsArchived={ContactsArchived}
+        ContactsLocked={ContactsLocked}
+        ContactsFavorate={ContactsFavorate}
+        Archived={true}
+        msg={msg} msgAI={msgAI}
+        messages={messages} messagesAI={messagesAI}
+        openChat={openChat} />}
+
+      {ActivationIcon === "archive" && <Chattingboard sendMessage={sendMessage}
+        archive={true}
+        setMsg={setMsg}
+        messages={messages}
+        setMessages={setMessages}
+        socket={socket}
+        Input={Input}
+        msg={msg}
+        Avatar={Avatar}
+        chatting_with={chatting_with}
+        chatting_with_state={chatting_with_state}
+        setActivationIcon={setActivationIcon}
+        setMsgEmoji={setMsgEmoji}
+        msgEmoji={msgEmoji}
+        isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
+
+
+      {ActivationIcon === "favorate" && <Chatslist Contacts={Contacts}
+        ContactsArchived={ContactsArchived}
+        ContactsLocked={ContactsLocked}
+        ContactsFavorate={ContactsFavorate}
+        Favorate={true}
+        msg={msg} msgAI={msgAI}
+        messages={messages} messagesAI={messagesAI}
+        openChat={openChat} />}
+
+      {ActivationIcon === "favorate" && <Chattingboard sendMessage={sendMessage}
+        archive={true}
+        setMsg={setMsg}
+        messages={messages}
+        setMessages={setMessages}
+        socket={socket}
+        Input={Input}
+        msg={msg}
+        Avatar={Avatar}
+        chatting_with={chatting_with}
+        chatting_with_state={chatting_with_state}
+        setActivationIcon={setActivationIcon}
+        setMsgEmoji={setMsgEmoji}
+        msgEmoji={msgEmoji}
+        isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
+
+
+      {ActivationIcon === "locked" && <Chatslist Contacts={Contacts}
+        ContactsArchived={ContactsArchived}
+        ContactsLocked={ContactsLocked}
+        ContactsFavorate={ContactsFavorate}
+        Locked={true}
+        msg={msg} msgAI={msgAI}
+        messages={messages} messagesAI={messagesAI}
+        openChat={openChat} />}
+
+      {ActivationIcon === "locked" && <Chattingboard sendMessage={sendMessage}
+        archive={true}
+        setMsg={setMsg}
+        messages={messages}
+        setMessages={setMessages}
+        socket={socket}
+        Input={Input}
+        msg={msg}
+        Avatar={Avatar}
+        chatting_with={chatting_with}
+        chatting_with_state={chatting_with_state}
+        setActivationIcon={setActivationIcon}
+        setMsgEmoji={setMsgEmoji}
+        msgEmoji={msgEmoji}
+        isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
     </div>
   );
 }
