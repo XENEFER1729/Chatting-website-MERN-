@@ -6,6 +6,7 @@ import Chattingboard from './Chatting_board_compos/Chattingboard';
 import Leftfirst from './Left_First_Components/Leftfirst';
 import Chatslist from './Left_second/Chatslist';
 import Settingsmain from "./Left_second/settings/Settingsmain"
+import AskLock from './Left_second/Lock/AskLock';
 
 // Connecting to the backend server
 const socket = io("http://localhost:9000");
@@ -227,7 +228,7 @@ export default function Dashboard_main() {
 
 
       {ActivationIcon === "archive" && <Chatslist
-      ActivationIcon={ActivationIcon}
+        ActivationIcon={ActivationIcon}
         Contacts={Contacts}
         ContactsArchived={ContactsArchived}
         ContactsLocked={ContactsLocked}
@@ -279,6 +280,9 @@ export default function Dashboard_main() {
         msgEmoji={msgEmoji}
         isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
 
+      {ActivationIcon === "lockedCompo" &&
+        <AskLock setActivationIcon={setActivationIcon} ActivationIcon={ActivationIcon} />}
+
 
       {ActivationIcon === "locked" && <Chatslist Contacts={Contacts}
         ContactsArchived={ContactsArchived}
@@ -289,21 +293,23 @@ export default function Dashboard_main() {
         messages={messages} messagesAI={messagesAI}
         openChat={openChat} />}
 
-      {ActivationIcon === "locked" && <Chattingboard sendMessage={sendMessage}
-        archive={true}
-        setMsg={setMsg}
-        messages={messages}
-        setMessages={setMessages}
-        socket={socket}
-        Input={Input}
-        msg={msg}
-        Avatar={Avatar}
-        chatting_with={chatting_with}
-        chatting_with_state={chatting_with_state}
-        setActivationIcon={setActivationIcon}
-        setMsgEmoji={setMsgEmoji}
-        msgEmoji={msgEmoji}
-        isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
+      {ActivationIcon === "locked" &&
+        <Chattingboard sendMessage={sendMessage}
+          Locked={true}
+          // archive={true}
+          setMsg={setMsg}
+          messages={messages}
+          setMessages={setMessages}
+          socket={socket}
+          Input={Input}
+          msg={msg}
+          Avatar={Avatar}
+          chatting_with={chatting_with}
+          chatting_with_state={chatting_with_state}
+          setActivationIcon={setActivationIcon}
+          setMsgEmoji={setMsgEmoji}
+          msgEmoji={msgEmoji}
+          isOpenchat={isOpenchat} setisOpenchat={setisOpenchat} />}
     </div>
   );
 }

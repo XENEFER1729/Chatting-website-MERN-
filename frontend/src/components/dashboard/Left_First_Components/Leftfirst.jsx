@@ -20,10 +20,10 @@ export default function Leftfirst({ ActivationIcon, setActivationIcon, setisOpen
                     onClick={() => { setActivationIcon("chats"); setisOpenchat(false) }} >
                     <MessageSquare size={24} />
                 </button>
-                <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon === "calls" ? "text-green-500" : ""} `}
+                {/* <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon === "calls" ? "text-green-500" : ""} `}
                     onClick={() => setActivationIcon("calls")}>
                     <Phone size={24} />
-                </button>
+                </button> */}
                 <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon === "chatbot" ? "text-green-500" : ""} `}
                     onClick={() => { setActivationIcon("chatbot"); setisOpenchat(true) }}>
                     <Circle size={24} className="text-blue-500" />
@@ -31,14 +31,14 @@ export default function Leftfirst({ ActivationIcon, setActivationIcon, setisOpen
                 <div className="flex-grow" />
                 <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon === "favorate" ? "text-green-500" : ""} `}
                     onClick={() => { setActivationIcon("favorate"); setisOpenchat(false) }}>
-                    <Star className="mr-2 h-4 w-4" />
+                    <Star size={24} className="" />
                 </button>
                 <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon === "archive" ? "text-green-500" : ""} `}
                     onClick={() => { setActivationIcon("archive"); setisOpenchat(false) }}>
                     <Archive size={24} />
                 </button>
                 <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon === "locked" ? "text-green-500" : ""} `}
-                    onClick={() => { setActivationIcon("locked"); setisOpenchat(false) }}>
+                    onClick={() => { setActivationIcon("lockedCompo"); setisOpenchat(false) }}>
                     <Lock size={24} />
                 </button>
                 <button className={`text-gray-400 hover:text-green-500 ${ActivationIcon === "settings" ? "text-green-500" : ""} `}

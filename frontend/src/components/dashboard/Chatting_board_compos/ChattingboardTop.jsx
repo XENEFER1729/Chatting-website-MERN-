@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PhoneCall, Video, Menu, Trash2,Star, Archive, X, MessageSquare, Settings,Lock } from "lucide-react";
 import VoCallSub from '../Left_second/Voicecalling/VoCallSub';
 
-export default function ChattingboardTop({ more,
+export default function ChattingboardTop({ more,Locked=false,
     video_call,
     Avatar,
     chatting_with,
@@ -46,6 +46,19 @@ export default function ChattingboardTop({ more,
             setOpenDropdown(dropdown);
         }
     };
+    const deleteConv=async()=>{
+        console.log("deleting the conversation")
+        const delete1=await fetch("http://localhost:9000/api/clearConversation",{
+            method:"DELETE",
+            headers:{
+                "COntent-Type":"application/json",
+            },
+            body:JSON.stringify({user1:localStorage.getItem("Email"),user2:localStorage.getItem("receiver_Email")})
+        })
+        const data=await delete1.json()
+        console.log(data)
+        console.log("deleted the conversation")
+    }
     const clearChat = async () => {
         try {
             const response = await fetch("http://localhost:9000/api/clearChat", {
@@ -106,20 +119,24 @@ export default function ChattingboardTop({ more,
         }
         if (action === "archive" || action === "schedule-video") {
             // setActivationIcon("archive")
-            console.log("archive")
+            // console.log("archive")
             ArchiveChat("archive",true,"archived");
         }
         if (action === "favorite" || action === "schedule-video") {
             // setActivationIcon("archive")
-            console.log("favorite")
+            // console.log("favorite")
             ArchiveChat("favorate",true,"favorate");
         }
         if (action === "lock" || action === "schedule-video") {
             // setActivationIcon("archive")
-            console.log("lock")
+            // console.log("lock")
             ArchiveChat("lock",true,"lock");
         }
+        if (action === "delete" || action === "schedule-video") {
+            deleteConv();
+        }
     };
+
 
     return (
         <div className="w-full h-[80px] flex justify-between p-2 bg-gray-800 text-white">

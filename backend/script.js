@@ -8,12 +8,21 @@ const { v4: uuidv4 } = require("uuid")
 
 const app = express();
 const server = http.createServer(app);
+// const io = socketIo(server, {
+//   cors: {
+//     origin: "http://localhost:3000",  // Change this to the client URL if needed
+//     methods: ["GET", "POST"],
+//   },
+// });
+
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",  // Change this to the client URL if needed
+    origin: "*",  // Allow all origins (update in production)
     methods: ["GET", "POST"],
-  },
+    credentials: true
+  }
 });
+
 
 // Imports
 require("./db/connection");
@@ -292,17 +301,17 @@ app.post("/api/archive", async (req, res) => {
   }
 });
 
-app.post("/api/archive", async (req, res) => {
-  const { user1, user2, archived } = req.body;
+app.post("/api/favorate", async (req, res) => {
+  const { user1, user2, favorate } = req.body;
 
   try {
     const updatedConversation = await Conversation.updateOne(
       { members: { $all: [user1, user2] } }, // Find conversation with both users
       {
         $set: {
-          favorate: archived, // Toggle favorite status
-          locked: !archived,   // Toggle locked status
-          archived: !archived   // Set archived status
+          favorate: favorate, // Toggle favorite status
+          locked: !favorate,   // Toggle locked status
+          archived: !favorate  // Set archived status
         }
       }
     );
@@ -314,17 +323,17 @@ app.post("/api/archive", async (req, res) => {
   }
 });
 
-app.post("/api/archive", async (req, res) => {
-  const { user1, user2, archived } = req.body;
+app.post("/api/lock", async (req, res) => {
+  const { user1, user2, lock } = req.body;
 
   try {
     const updatedConversation = await Conversation.updateOne(
       { members: { $all: [user1, user2] } }, // Find conversation with both users
       {
         $set: {
-          favorate: !archived, // Toggle favorite status
-          locked: archived,   // Toggle locked status
-          archived: !archived   // Set archived status
+          favorate: !lock, // Toggle favorite status
+          locked: lock,   // Toggle locked status
+          archived: !lock   // Set archived status
         }
       }
     );
@@ -335,29 +344,40 @@ app.post("/api/archive", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 
 
 
 app.delete("/api/clearConversation", async (req, res) => {
-  const { user1, user2 } = req.body;
-  const conv = await Conversation.deleteOne({
-    $or: [
-      { senderid: user1, receiverid: user2 },
-      { senderid: user2, receiverid: user1 }
-    ]
-  });
-  const messages = await Message.deleteOne({
-    $or: [
-      { senderid: user1, receiverid: user2 },
-      { senderid: user2, receiverid: user1 }
-    ]
-  });
-  res.status(200).json({
-    messages, conv
-  });
+  try {
+    const { user1, user2 } = req.body;
 
-})
+    // Check if both user IDs are provided
+    if (!user1 || !user2) {
+      return res.status(400).json({ message: "Both user1 and user2 are required" });
+    }
+
+    const conv = await Conversation.deleteOne({
+      members: { $all: [user1, user2] }  // Use this if members is an array
+  });
+    
+
+    const messages = await Message.deleteMany({
+      $or: [
+        { senderid: user1, receiverid: user2 },
+        { senderid: user2, receiverid: user1 }
+      ]
+    });
+
+    res.status(200).json({
+      message: "Conversation and messages deleted successfully",
+      deletedConversation: conv.deletedCount,
+      deletedMessages: messages.deletedCount
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 
 app.post("/api/setCallingId", async (req, res) => {
   const { email, callingId } = req.body;

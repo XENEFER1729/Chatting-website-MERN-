@@ -249,6 +249,7 @@ const Settingsmain = () => {
                     </Card>
 
                     {/* Appearance Settings */}
+                    <div className='text-red-600 self-center text-2xl font-bold'>Future Scopes</div>
                     <Card>
                         <CardHeader>
                             <CardTitle>
