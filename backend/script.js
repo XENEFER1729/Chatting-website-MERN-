@@ -8,16 +8,10 @@ const { v4: uuidv4 } = require("uuid")
 
 const app = express();
 const server = http.createServer(app);
-// const io = socketIo(server, {
-//   cors: {
-//     origin: "http://localhost:3000",  // Change this to the client URL if needed
-//     methods: ["GET", "POST"],
-//   },
-// });
 
 const io = socketIo(server, {
   cors: {
-    origin: "*",  // Allow all origins (update in production)
+    origin: "*", 
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -144,8 +138,6 @@ app.get("/api/seeRooms", async (req, res) => {
 
 app.post("/api/createConversation", async (req, res) => {
   const { senderid, receiverid } = req.body;
-
-  // Check if the sender and receiver are the same
   if (senderid === receiverid) {
     return res.status(400).json({ message: "Cannot create a conversation with the same user." });
   }
@@ -287,9 +279,9 @@ app.post("/api/archive", async (req, res) => {
       { members: { $all: [user1, user2] } }, // Find conversation with both users
       {
         $set: {
-          favorate: !archived, // Toggle favorite status
-          locked: !archived,   // Toggle locked status
-          archived: archived   // Set archived status
+          favorate: !archived, 
+          locked: !archived,  
+          archived: archived 
         }
       }
     );
@@ -306,12 +298,12 @@ app.post("/api/favorate", async (req, res) => {
 
   try {
     const updatedConversation = await Conversation.updateOne(
-      { members: { $all: [user1, user2] } }, // Find conversation with both users
+      { members: { $all: [user1, user2] } },
       {
         $set: {
-          favorate: favorate, // Toggle favorite status
-          locked: !favorate,   // Toggle locked status
-          archived: !favorate  // Set archived status
+          favorate: favorate,
+          locked: !favorate,  
+          archived: !favorate  
         }
       }
     );
@@ -328,12 +320,12 @@ app.post("/api/lock", async (req, res) => {
 
   try {
     const updatedConversation = await Conversation.updateOne(
-      { members: { $all: [user1, user2] } }, // Find conversation with both users
+      { members: { $all: [user1, user2] } },
       {
         $set: {
-          favorate: !lock, // Toggle favorite status
-          locked: lock,   // Toggle locked status
-          archived: !lock   // Set archived status
+          favorate: !lock,
+          locked: lock,
+          archived: !lock  
         }
       }
     );
@@ -351,13 +343,12 @@ app.delete("/api/clearConversation", async (req, res) => {
   try {
     const { user1, user2 } = req.body;
 
-    // Check if both user IDs are provided
     if (!user1 || !user2) {
       return res.status(400).json({ message: "Both user1 and user2 are required" });
     }
 
     const conv = await Conversation.deleteOne({
-      members: { $all: [user1, user2] }  // Use this if members is an array
+      members: { $all: [user1, user2] }
   });
     
 
@@ -428,7 +419,6 @@ app.delete("/api/clearChat", async (req, res) => {
 
 })
 
-// Socket.io connection   
 const users_sockets = {}
 io.on("connection", (socket) => {
   // console.log("A user connected", socket.id);
@@ -460,7 +450,6 @@ io.on("connection", (socket) => {
 });
 
 
-// Start the server 
 server.listen(9000, () => {
   console.log("Server is running on port 9000");
 });
